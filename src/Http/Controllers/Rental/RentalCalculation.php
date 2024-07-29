@@ -53,7 +53,7 @@ class RentalCalculation extends Component
     #[Computed(persist: true)]
     public function branch()
     {
-        return \Pranjal\Rental\Models\Branch::select("name")->get();
+        return \App\Models\configs\Branch::select("name")->get();
     }
 
     #[Computed(persist: true)]
