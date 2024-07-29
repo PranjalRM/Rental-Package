@@ -1,0 +1,25 @@
+{
+    "name": "pranjal/rental",
+    "description": "This is the package which is used in cd-hrm for rental.",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "require": {
+        "anuzpandey/laravel-nepali-date": "^2.0.0",
+        "livewire/livewire": "^3.2",
+        "maatwebsite/excel": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pranjal\\Rental\\": "src/"
+        }
+    },
+    "extra": {
+    "laravel": {
+        "providers": [
+            "Pranjal\\Rental\\RentalServiceProvider"
+            ]
+        }
+    }
+
+}
