@@ -6,7 +6,7 @@ use App\Traits\WithDataTable;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Pranjal\Rental\Models\RentalOwners;
-use Pranjal\Rental\Traits\WithNotify;
+use App\Traits\WithNotify;
 use Livewire\Attributes\Validate;
 use Pranjal\Rental\Models\RentalReject;
 use Livewire\Attributes\Computed;
