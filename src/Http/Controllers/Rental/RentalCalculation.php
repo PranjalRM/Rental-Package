@@ -8,6 +8,8 @@ use Livewire\Attributes\Computed;
 use App\Traits\WithDataTable;
 use Maatwebsite\Excel\Facades\Excel;
 use Pranjal\Rental\Exports\RentalCalculationExport;
+use Livewire\Attributes\Layout;
+
 
 class RentalCalculation extends Component
 {
@@ -72,6 +74,8 @@ class RentalCalculation extends Component
     {
         return \Pranjal\Rental\Models\IncrementAmount::select("month")->distinct()->orderBy('month','asc')->get();
     }
+    
+    #[Layout('layouts.app')]
     public function render()
     {
         return view('livewire.config.rental.rental-calculation');
