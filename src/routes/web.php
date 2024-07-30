@@ -9,11 +9,7 @@ use Pranjal\Rental\Http\Controllers\Rental\Agreement\OwnerAgreement;
 use Pranjal\Rental\Http\Controllers\Rental\Agreement\AddOwnerAgreement;
 use Pranjal\Rental\Http\Controllers\Rental\Agreement\UpdateAgreement;
 
-Route::get('rental',function() {
-    return 'rental';
-});
-
-Route::get('rentaling', RentalOwner::class)->name('rentalInfo');
+Route::get('rental', RentalOwner::class)->name('rentalInfo');
 Route::get('rental/calculation',RentalCalculation::class)->name('rentalCalculation');
 Route::get('rental/add',AddRental::class)->name('addRental');
 Route::get('rental/edit/{id}',AddRental::class)->name('editRental');
