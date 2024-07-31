@@ -15,11 +15,16 @@ return new class extends Migration
             $table->id();
             $table->string('type')->nullable();
             $table->string('image_path')->nullable();
-            $table->foreignId('owner_citizenship_number')
-                ->constrained('rental_owner','citizenship_number')
+            $table->foreignId('owner_id')
+                ->constrained('rental_owner')
                 ->nullable()
                 ->onDelete('cascade')
-                ->onUpdate('cascade'); 
+                ->onUpdate('cascade');
+            $table->foreignId('agreement_id')
+                ->constrained('rental_agreement')
+                ->nullable()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');  
             $table->timestamps();
         });
     }

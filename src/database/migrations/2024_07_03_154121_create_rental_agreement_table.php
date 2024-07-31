@@ -25,6 +25,7 @@ return new class extends Migration
             $table->float('net_rental_amount')->nullable();
             $table->float('current_rental_amount')->nullable();
             $table->float('tds')->nullable();
+            $table->tinyInteger('tds_payable');
             $table->float('electricity_rate')->nullable();
             $table->float('advance')->nullable();
             $table->enum('payment_period',['monthly', 'quarterly', 'quadrimester']);
@@ -45,13 +46,11 @@ return new class extends Migration
             
             $table->foreignId('amendment_child_id')->constrained('rental_agreement')->nullable();
             
-            $table->enum('agreement_status',['Submitted', 'Approved']);
+            $table->enum('agreement_status',['Submitted', 'Approved','Rejected']);
             
             $table->foreignId('added_by')->nullable()->constrained('employees');
             $table->foreignId('approved_by')->nullable()->constrained('employees');
-            
             $table->timestamps();
-            $table->tinyInteger('tds_payable');
         });
     }
 
