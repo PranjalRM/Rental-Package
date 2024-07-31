@@ -18,6 +18,7 @@ use Pranjal\Rental\Models\IncrementAmount;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Employee\Employee;
 use Pranjal\Rental\Models\RentalReject;
+use Pranjal\Rental\Http\Repositories\RentalAgreementRepository;
 
 class OwnerAgreement extends Component
 {
@@ -29,13 +30,15 @@ class OwnerAgreement extends Component
     public $documentType="branchRenewal";
     public $agreementData;
     public $reason;
+    public $terminated_date;
     
     #[Validate('mimes:pdf|max:7168')]
     public $file;
 
-
+    private RentalAgreementRepository $repository;
     public function __construct()
     {
+        $this->repository = new RentalAgreementRepository;
         $this->tableListVariable = "loadAgreements";
     }
 
@@ -147,9 +150,28 @@ class OwnerAgreement extends Component
         $this->reason = '';
     }
 
+    public function addTerminateDate($agreementId)
+    {
+        $this->validate(['terminated_date' => 'required|date']);
+        $agreement = RentalAgreement::findOrFail($agreementId);
+        $agreement->terminated_date = $this->terminated_date;
+        $this->repository->updateIncrementAmounts($agreement->id, 
+                                                  $agreement->agreement_date,
+                                                  $agreement->terminated_date, 
+                                                  $agreement->gross_rental_amount, 
+                                                  $agreement->tds_payable,
+                                                  $agreement->advance);
+        $agreement->save();
+
+        $this->dispatch('hide-model');
+        $this->notify('Termination date updated successfully')->send();
+        unset($this->loadAgreements);
+    }
+
+
     public function render()
     {
-        return view('livewire.config.rental.agreement.owner-agreement');
+        return view('rental::rental.agreement.owner-agreement');
     }
 
     private function saveDocument($file, $type)

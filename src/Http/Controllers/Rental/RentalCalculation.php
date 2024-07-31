@@ -8,6 +8,7 @@ use Livewire\Attributes\Computed;
 use App\Traits\WithDataTable;
 use Maatwebsite\Excel\Facades\Excel;
 use Pranjal\Rental\Exports\RentalCalculationExport;
+use Livewire\Attributes\Layout;
 
 class RentalCalculation extends Component
 {
@@ -53,7 +54,7 @@ class RentalCalculation extends Component
     #[Computed(persist: true)]
     public function branch()
     {
-        return \Pranjal\Rental\Models\Branch::select("name")->get();
+        return \App\Models\configs\Branch::select("name")->get();
     }
 
     #[Computed(persist: true)]
@@ -72,8 +73,9 @@ class RentalCalculation extends Component
     {
         return \Pranjal\Rental\Models\IncrementAmount::select("month")->distinct()->orderBy('month','asc')->get();
     }
+    #[Layout('layouts.app')]
     public function render()
     {
-        return view('livewire.config.rental.rental-calculation');
+        return view('rental::rental.rental-calculation');
     }
 }

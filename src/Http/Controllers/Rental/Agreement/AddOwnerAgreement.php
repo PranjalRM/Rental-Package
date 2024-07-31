@@ -266,7 +266,7 @@ class AddOwnerAgreement extends Component
 
     public function render()
     {
-        return view('livewire.config.rental.agreement.add-owner-agreement');
+        return view('rental::rental.agreement.add-owner-agreement');
     }
 
     private function saveDocument($file, $type)

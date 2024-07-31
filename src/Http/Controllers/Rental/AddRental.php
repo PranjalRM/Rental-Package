@@ -147,7 +147,7 @@ class AddRental extends Component
 
     public function render()
     {
-        return view('livewire.config.rental.add-rental');
+        return view('rental::rental.add-rental');
     }
     
     #[Computed()]

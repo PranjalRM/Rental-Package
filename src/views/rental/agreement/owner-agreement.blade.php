@@ -50,7 +50,7 @@
                     <x-table.cell>{{ $agreement->agreement_date }}</x-table.cell>
                     <x-table.cell>{{ $agreement->agreement_end_date }}</x-table.cell>
                     <x-table.cell>{{ $agreement->remaining_days }}</x-table.cell>
-                    <x-table.cell>{{ $agreement->termination_date }}</x-table.cell>
+                    <x-table.cell>{{ $agreement->terminated_date }}</x-table.cell>
                     @foreach (['agreement', 'TDS', 'branchRenewal'] as $type)
                         @php
                             $document = $agreement->file()->where('type', $type)->first();
@@ -78,16 +78,21 @@
                         <x-table.action>
                             <div class="btn-group-vertical" role="group" aria-label="Action Buttons">
                                 @if ($agreement->agreement_status == 'Submitted')
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-success" wire:click="approve({{ $agreement->id }})">
-                                        <i class="bi bi-check-circle"></i> Approve
-                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-success" wire:click="approve({{ $agreement->id }})">
+                                            <i class="bi bi-check-circle"></i> Approve
+                                        </button>
 
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modals">
-                                        <i class="bi bi-x-circle"></i> Reject
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modals">
+                                            <i class="bi bi-x-circle"></i> Reject
+                                        </button>
+                                    </div>
+                                @endif
+                                @if ($agreement->agreement_status == 'Approved')
+                                    <button type="button" class="btn btn-danger"  data-bs-toggle="modal" data-bs-target="#model">
+                                        <i class="bi bi-x-circle"></i> Terminate
                                     </button>
                                 @endif
-                            </div>
                                 <button type="button" class="btn btn-warning text-dark" data-bs-toggle="modal" data-bs-target="#modal">
                                     <i class="bi bi-cloud-upload"></i> Upload Document
                                 </button>
@@ -102,8 +107,24 @@
                                     <i class="bi bi-files text-white"></i> Copy
                                 </button>
                                 <x-table.action-option type="delete" wire:confirm="Are you sure to delete this item?" wire:click="delete({{ $agreement->id }})" />
+                            </div>
                         </x-table.action>
-                    </x-table.cell>
+                    </x-table.cell> 
+                    <x-modal id="model">
+                        <x-slot name="title">Termintaion Date</x-slot>
+                        <x-slot name="body">
+                            <form wire:submit.prevent="addTerminateDate">
+                                <div class="mb-3">
+                                    <label for="reason" class="form-label">Terminate Date</label>
+                                    <x-form.nepali-date-picker-input wire:model="terminated_date"/>
+                                </div>
+                            </form>
+                        </x-slot>
+                        <x-slot name="footer">
+                            <x-form.button color="secondary" data-bs-dismiss="modal">Cancel</x-form.button>
+                            <x-form.button type="submit" wire:click="addTerminateDate({{$agreement->id}})" color="primary">Save</x-form.button>
+                        </x-slot>
+                    </x-modal>
                     <x-modal id="modals">
                         <x-slot name="title">Add Reason</x-slot>
                         <x-slot name="body">
