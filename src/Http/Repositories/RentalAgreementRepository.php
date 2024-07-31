@@ -13,7 +13,7 @@ use Pranjal\Rental\Models\RentalDocument;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\Models\Employee\Employee;
+use App\Models\Employee\Employee;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;

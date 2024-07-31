@@ -4,6 +4,7 @@
     "type": "library",
     "license": "MIT",
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
         "anuzpandey/laravel-nepali-date": "^2.0.0",
         "livewire/livewire": "^3.2",
@@ -15,9 +16,9 @@
         }
     },
     "extra": {
-    "laravel": {
-        "providers": [
-            "Pranjal\\Rental\\RentalServiceProvider"
+        "laravel": {
+            "providers": [
+                "Pranjal\\Rental\\RentalServiceProvider"
             ]
         }
     }

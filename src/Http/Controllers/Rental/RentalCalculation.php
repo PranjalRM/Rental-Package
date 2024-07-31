@@ -73,6 +73,7 @@ class RentalCalculation extends Component
     {
         return \Pranjal\Rental\Models\IncrementAmount::select("month")->distinct()->orderBy('month','asc')->get();
     }
+    
     #[Layout('layouts.app')]
     public function render()
     {
