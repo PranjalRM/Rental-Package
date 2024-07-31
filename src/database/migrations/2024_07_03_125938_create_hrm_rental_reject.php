@@ -18,6 +18,11 @@ return new class extends Migration
                 ->constrained('rental_owner')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            $table->foreignId('agreement_id')
+                ->constrained('rental_agreement')
+                ->nullable()
+                ->onDelete('cascade')
+                ->onUpdate('cascade'); 
             $table->text('reason');
             $table->timestamps();
         });
