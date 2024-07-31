@@ -10,7 +10,6 @@ use Maatwebsite\Excel\Facades\Excel;
 use Pranjal\Rental\Exports\RentalCalculationExport;
 use Livewire\Attributes\Layout;
 
-
 class RentalCalculation extends Component
 {
     use WithDataTable;
@@ -78,6 +77,6 @@ class RentalCalculation extends Component
     #[Layout('layouts.app')]
     public function render()
     {
-        return view('livewire.config.rental.rental-calculation');
+        return view('rental::rental.rental-calculation');
     }
 }

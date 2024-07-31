@@ -303,6 +303,6 @@ class UpdateAgreement extends Component
 
     public function render()
     {
-        return view('livewire.config.rental.agreement.update-agreement');
+        return view('rental::rental.agreement.update-agreement');
     }
 }

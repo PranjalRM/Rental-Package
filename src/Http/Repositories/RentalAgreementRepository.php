@@ -181,7 +181,7 @@ class RentalAgreementRepository extends Repository
         $incrementAmounts = [];
         $gross_rental_amount = $grossRentalAmount;
 
-        while ($currentDate <= $endDate) {
+        while ($currentDate <= $endDate || $currentDate->month === $endDate->month) {
             $currentYear = $currentDate->year;
             $currentMonth = $currentDate->month;
             $startOfMonth = $startDate->copy()->startOfMonth();
@@ -197,23 +197,22 @@ class RentalAgreementRepository extends Repository
                     }
                 }
             }
-            if ($currentDate->month === $startOfMonth->month && $currentDate->year === $startDate->year) {
-                $days = $daysInMonth - $startDate->day + 1;
-                $netRentalAmount = $gross_rental_amount * $days / $daysInMonth;
-                $tdsAmount = $netRentalAmount/$tdsPayable;
-                $paymentAmount = $netRentalAmount - $tdsAmount;
-
-            } elseif ($currentDate->month === $endOfMonth->month && $currentDate->year === $endDate->year) {
-                $days = $endDate->day;
-                $netRentalAmount = $gross_rental_amount * $days / $daysInMonth;
-                $tdsAmount = $netRentalAmount/$tdsPayable;
-                $paymentAmount = $netRentalAmount - $tdsAmount;
-
+            if ($currentDate->month === $startOfMonth->month && $currentDate->year === $startOfMonth->year) {
+                $startDay = $startDate->day;
             } else {
-                $tdsAmount = $gross_rental_amount/$tdsPayable;
-                $netRentalAmount = $gross_rental_amount-$tdsAmount;
-                $paymentAmount = $netRentalAmount - $tdsAmount;
+                $startDay = 1;
             }
+        
+            if ($currentDate->month === $endOfMonth->month && $currentDate->year === $endOfMonth->year) {
+                $endDay = $endDate->day;
+            } else {
+                $endDay = $daysInMonth;
+            }
+        
+            $daysInPeriod = $endDay - $startDay + 1;
+            $netRentalAmount = $gross_rental_amount * $daysInPeriod / $daysInMonth;
+            $tdsAmount = $netRentalAmount / $tdsPayable;
+            $paymentAmount = $netRentalAmount - $tdsAmount;
             $amount = [
                 'rental_agreement_id' => $rentalAgreementId,
                 'date' => $currentDate->format('Y-m-d'),
@@ -227,6 +226,9 @@ class RentalAgreementRepository extends Repository
                 'updated_at' => now(),
             ];
             $incrementAmounts[] = $amount;
+            if ($currentDate->copy()->addMonth()->startOfMonth() === $endDate->copy()->month()) {
+                break;
+            }
             $currentDate->addMonth();
         }
         return $incrementAmounts;
