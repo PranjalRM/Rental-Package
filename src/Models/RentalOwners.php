@@ -1,6 +1,6 @@
 <?php
 
-namespace Pranjal\Rental\Models;
+namespace CodeBright\Rental\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -34,7 +34,7 @@ class RentalOwners extends Model
     }
     public function documents()
     {
-        return $this->hasMany(RentalDocument::class,'owner_citizenship_number','citizenship_number');
+        return $this->hasMany(RentalDocument::class,'owner_id');
     }
 
 }

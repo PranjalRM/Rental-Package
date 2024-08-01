@@ -1,17 +1,19 @@
 <?php
 
-namespace Pranjal\Rental\Http\Controllers\Rental;
+namespace CodeBright\Rental\Http\Controllers\Rental;
 
 use App\Traits\WithDataTable;
 use Livewire\Component;
 use Livewire\Attributes\Title;
-use Pranjal\Rental\Models\RentalOwners;
+use CodeBright\Rental\Models\RentalOwners;
 use App\Traits\WithNotify;
 use Livewire\Attributes\Validate;
-use Pranjal\Rental\Models\RentalReject;
+use CodeBright\Rental\Models\RentalReject;
 use Livewire\Attributes\Computed;
 use App\Models\Employee\Employee;
 use Illuminate\Support\Facades\Auth;
+use CodeBright\Rental\Models\RentalDocument;
+use Illuminate\Support\Facades\Storage;
 
 #[Title('Rental Owner')]
 class RentalOwner extends Component
@@ -55,7 +57,13 @@ class RentalOwner extends Component
     }
 
     public function delete(RentalOwners $id)
-    {
+    {   
+        $documents=RentalDocument::with('images')->where('owner_id', $id->id)->get();
+        foreach($documents as $document){
+            $filePath = $document->image_path;
+            Storage::delete('public/'.$filePath);
+            $document->delete();
+        }
             $id -> delete();
             $message = 'Rental owner deleted successfully';
             unset($this->list);
@@ -77,8 +85,8 @@ class RentalOwner extends Component
         $owner->save();
 
         $this->dispatch('hide-model');
-        $this->notify('Reason added successfully')->send();
-        unset($this->list); 
+        unset($this->list);
+        $this->notify('Reason added successfully')->send(); 
         $this->reason = '';
     }
 

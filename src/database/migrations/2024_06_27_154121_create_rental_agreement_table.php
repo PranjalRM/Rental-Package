@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('rental_agreement', function (Blueprint $table) {
             $table->id();
             
-            $table->foreignId('rental_owner_id')->constrained('rental_owner')->onDelete('cascade')->nullable();
+            $table->foreignId('rental_owner_id')->nullable()->constrained('rental_owner')->onDelete('cascade');
             
             $table->string('agreement_date',191)->nullable();
             $table->string('agreement_end_date',191)->nullable();
@@ -44,7 +44,7 @@ return new class extends Migration
             $table->string('witnesses', 191)->nullable();
             $table->string('place_name', 191)->nullable();
             
-            $table->foreignId('amendment_child_id')->constrained('rental_agreement')->nullable();
+            $table->foreignId('amendment_child_id')->nullable()->constrained('rental_agreement');
             
             $table->enum('agreement_status',['Submitted', 'Approved','Rejected']);
             

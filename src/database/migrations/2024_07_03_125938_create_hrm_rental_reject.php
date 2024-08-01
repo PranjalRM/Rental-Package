@@ -19,8 +19,8 @@ return new class extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->foreignId('agreement_id')
-                ->constrained('rental_agreement')
                 ->nullable()
+                ->constrained('rental_agreement')
                 ->onDelete('cascade')
                 ->onUpdate('cascade'); 
             $table->text('reason');

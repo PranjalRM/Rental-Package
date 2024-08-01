@@ -1,6 +1,6 @@
 <?php
 
-namespace Pranjal\Rental\Models;
+namespace CodeBright\Rental\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,11 +16,11 @@ class RentalDocument extends Model
 
     public function images()
     {
-        return $this->belongsTo(RentalOwners::class, 'owner_citizenship_number', 'citizenship_number');
+        return $this->belongsTo(RentalOwners::class, 'owner_id');
     }
 
     public function documents()
     {
-        return $this->belongsTo(RentalAgreement::class, 'rental_agreement_id');   
+        return $this->belongsTo(RentalAgreement::class, 'agreement_id');   
      }
 }

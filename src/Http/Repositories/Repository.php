@@ -1,6 +1,6 @@
 <?php
 
-namespace Pranjal\Rental\Http\Repositories;
+namespace CodeBright\Rental\Http\Repositories;
 
 
 class Repository

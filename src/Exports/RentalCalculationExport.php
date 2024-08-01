@@ -1,6 +1,6 @@
 <?php
 
-namespace Pranjal\Rental\Exports;
+namespace CodeBright\Rental\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;

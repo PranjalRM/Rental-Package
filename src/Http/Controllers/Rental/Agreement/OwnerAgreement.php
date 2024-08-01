@@ -1,24 +1,24 @@
 <?php
 
-namespace Pranjal\Rental\Http\Controllers\Rental\Agreement;
+namespace CodeBright\Rental\Http\Controllers\Rental\Agreement;
 
 use Livewire\Component;
-use Pranjal\Rental\Models\RentalOwners;
-use Pranjal\Rental\Models\RentalAgreement;
+use CodeBright\Rental\Models\RentalOwners;
+use CodeBright\Rental\Models\RentalAgreement;
 use App\Traits\WithDataTable;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Illuminate\Http\UploadedFile;
-use Pranjal\Rental\Models\RentalDocument;
+use CodeBright\Rental\Models\RentalDocument;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
-use Pranjal\Rental\Exports\AgreementReportExport;
-use Pranjal\Rental\Models\IncrementAmount;
+use CodeBright\Rental\Exports\AgreementReportExport;
+use CodeBright\Rental\Models\IncrementAmount;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Employee\Employee;
-use Pranjal\Rental\Models\RentalReject;
-use Pranjal\Rental\Http\Repositories\RentalAgreementRepository;
+use CodeBright\Rental\Models\RentalReject;
+use CodeBright\Rental\Http\Repositories\RentalAgreementRepository;
 
 class OwnerAgreement extends Component
 {
@@ -84,7 +84,7 @@ class OwnerAgreement extends Component
     public function uploadDocument($agreementId)
     {   
         $this->validate();
-        $agreementDocumentPath = RentalDocument::where('rental_agreement_id',$agreementId)
+        $agreementDocumentPath = RentalDocument::where('agreement_id',$agreementId)
                 ->where('type',$this->documentType)
                 ->first();
         if($agreementDocumentPath)
@@ -102,8 +102,8 @@ class OwnerAgreement extends Component
             RentalDocument::create([
                 'type' => $this->documentType,
                 'image_path' => $agreementImagePath ? : null,
-                'rental_agreement_id' =>$agreementId,
-                'owner_citizenship_number' => $this->owner->citizenship_number,
+                'agreement_id' =>$agreementId,
+                'owner_id' => $this->owner->id
             ]);
         }
         $this->dispatch('hide-model');
@@ -134,15 +134,16 @@ class OwnerAgreement extends Component
     public function addReason($agreementId)
     {
         $this->validate(['reason' => 'required|string|min:5']);
-        $owner = RentalOwners::findOrFail($agreementId);
+        $agreement = RentalAgreement::findOrFail($agreementId);
         
         $reject = new RentalReject();
         $reject->reason = $this->reason;
-        $reject->owner_id = $owner->id; 
+        $reject->owner_id = $agreement->owner->id; 
+        $reject->agreement_id = $agreement->id;
         $reject->save();
 
-        $owner->status = 'Rejected';
-        $owner->save();
+        $agreement->agreement_status = 'Rejected';
+        $agreement->save();
 
         $this->dispatch('hide-model');
         $this->notify('Reason added successfully')->send();

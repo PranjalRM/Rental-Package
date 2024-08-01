@@ -84,7 +84,7 @@
                         @elseif ($owner->status == '11')
                             <span class="btn btn-success">{{ $owner->rental_status }}</span>
                         @elseif ($owner->status == 'Rejected')
-                            <span class="btn btn-danger">{{ $owner->rental_status }}</span>
+                            <span class="btn btn-danger">{{ $owner->status }}</span>
                         @endif
                     </x-table.cell>
                     <x-table.cell>

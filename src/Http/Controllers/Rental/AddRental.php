@@ -1,19 +1,20 @@
 <?php
 
-namespace Pranjal\Rental\Http\Controllers\Rental;
+namespace CodeBright\Rental\Http\Controllers\Rental;
 
-use Pranjal\Rental\Http\Repositories\RentalAgreementRepository;
+use CodeBright\Rental\Http\Repositories\RentalAgreementRepository;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
 use App\Traits\WithNotify;
-use Pranjal\Rental\Models\RentalOwners;
-use Pranjal\Rental\Models\BankCode;
-use Pranjal\Rental\Models\RentalDocument;
+use CodeBright\Rental\Models\RentalOwners;
+use CodeBright\Rental\Models\BankCode;
+use CodeBright\Rental\Models\RentalDocument;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
+use Illuminate\Validation\Rule;
 
 #[Title('Add Rental Owner')]
 class AddRental extends Component
@@ -104,7 +105,9 @@ class AddRental extends Component
    {
     return [
         'citizenshipImage' => [...($this->currentAction === 'edit' ? ['nullable']: ['required']), 'mimes:pdf','max:7168'],
-        'chequeImage' => [...($this->currentAction === 'edit' ? ['nullable']: ['required']), 'mimes:pdf','max:7168']
+        'chequeImage' => [...($this->currentAction === 'edit' ? ['nullable']: ['required']), 'mimes:pdf','max:7168'],
+        'citizenship_number' => [...($this->currentAction === 'edit' ? ['required'] : [Rule::unique('rental_owner', 'citizenship_number')]),'required'],
+        'customer_id' => [...($this->currentAction === 'edit' ? ['nullable'] : ['nullable']),'nullable', 'integer']
     ];
    }
 
@@ -188,9 +191,7 @@ class AddRental extends Component
             'location' => 'location',
             'branch_id' => 'branch_id',
             'oc_id' => 'oc_id',
-            'rental_type_id' => 'rental_type_id',
-            'customer_id' => 'customer_id',
-            
+            'rental_type_id' => 'rental_type_id',            
         ];
     }
     private function loadOwnerDetails()
@@ -209,10 +210,10 @@ class AddRental extends Component
             $this->secondary_bank_name = $secondaryBank ? $secondaryBank->id : null;
         }
         
-        $citizenshipDocument = RentalDocument::where('owner_citizenship_number', $rentalOwner->citizenship_number)->where('type', 'citizenship')->first();
+        $citizenshipDocument = RentalDocument::where('owner_id', $rentalOwner->citizenship_number)->where('type', 'citizenship')->first();
         $this->existingCitizenshipImage = $citizenshipDocument ? $citizenshipDocument->image_path : null;
 
-        $chequeDocument = RentalDocument::where('owner_citizenship_number', $rentalOwner->citizenship_number)->where('type', 'cheque')->first();
+        $chequeDocument = RentalDocument::where('owner_id', $rentalOwner->citizenship_number)->where('type', 'cheque')->first();
         $this->existingChequeImage = $chequeDocument ? $chequeDocument->image_path : null;
     }
 
@@ -247,6 +248,7 @@ class AddRental extends Component
             }
             $data['primary_bank_code'] = $bankCode;
             $data['secondary_bank_code'] = $secondaryBankCode;
+            $data['customer_id'] = $this->customer_id ?: null;
 
             $message = $this->repository->saveOrUpdateRentalOwner(
                 $data,

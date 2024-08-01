@@ -1,11 +1,11 @@
 <?php
 
-namespace Pranjal\Rental\Exports;
+namespace CodeBright\Rental\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings; 
-use Pranjal\Rental\Models\RentalAgreement;
-use Pranjal\Rental\Models\IncrementAmount;
+use CodeBright\Rental\Models\RentalAgreement;
+use CodeBright\Rental\Models\IncrementAmount;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;

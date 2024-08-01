@@ -49,7 +49,7 @@ return new class extends Migration
            $table->integer('pop_id')->nullable();
            $table->string('grandfather_name', 191)->nullable();
            $table->string('father_name', 191)->nullable();
-           $table->bigInteger('citizenship_number')->unsigned()->nullable()->unique();
+           $table->bigInteger('citizenship_number')->nullable()->unique();
            $table->bigInteger('customer_id')->nullable();
            $table->timestamps();
            $table->softDeletes();
