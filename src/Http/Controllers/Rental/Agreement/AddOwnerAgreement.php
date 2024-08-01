@@ -19,7 +19,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use CodeBright\Rental\Http\Repositories\RentalAgreementRepository;
+use Livewire\Attributes\Title;
 
+#[Title('Add Agreement')]
 class AddOwnerAgreement extends Component
 {
     use WithFileUploads, WithNotify;
@@ -267,19 +269,6 @@ class AddOwnerAgreement extends Component
     public function render()
     {
         return view('rental::rental.agreement.add-owner-agreement');
-    }
-
-    private function saveDocument($file, $type)
-    {
-        if ($file instanceof UploadedFile) {
-            $filePath = $file->store('public/documents');
-            $filePath = str_replace('public/', '', $filePath);
-            return $filePath;
-        } elseif (is_string($file)) {
-            return $file;
-        }
-
-        return null;
     }
     
     private function updateAgreementEndDate()

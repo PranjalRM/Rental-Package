@@ -19,7 +19,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Employee\Employee;
 use CodeBright\Rental\Models\RentalReject;
 use CodeBright\Rental\Http\Repositories\RentalAgreementRepository;
+use Livewire\Attributes\Title;
 
+#[Title('Rental Agreement')]
 class OwnerAgreement extends Component
 {
     use WithDataTable ,WithFileUploads;
