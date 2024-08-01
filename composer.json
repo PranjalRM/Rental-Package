@@ -1,5 +1,5 @@
 {
-    "name": "pranjal/rental",
+    "name": "codebright/rental",
     "description": "This is the package which is used in cd-hrm for rental.",
     "type": "library",
     "license": "MIT",
@@ -12,13 +12,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Pranjal\\Rental\\": "src/"
+            "CodeBright\\Rental\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Pranjal\\Rental\\RentalServiceProvider"
+                "CodeBright\\Rental\\RentalServiceProvider"
             ]
         }
     }
