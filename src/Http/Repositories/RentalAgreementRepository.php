@@ -1,15 +1,15 @@
 <?php
 
-namespace Pranjal\Rental\Http\Repositories;
+namespace CodeBright\Rental\Http\Repositories;
 
-use Pranjal\Rental\Models\BankCode;
+use CodeBright\Rental\Models\BankCode;
 
 use App\Models\configs\Branch;
 use App\Models\configs\SubBranch;
 
-use Pranjal\Rental\Models\RentalType;
-use Pranjal\Rental\Models\RentalOwners;
-use Pranjal\Rental\Models\RentalDocument;
+use CodeBright\Rental\Models\RentalType;
+use CodeBright\Rental\Models\RentalOwners;
+use CodeBright\Rental\Models\RentalDocument;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,10 +17,10 @@ use App\Models\Employee\Employee;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
-use Pranjal\Rental\Models\RentalIncrementDetail;
+use CodeBright\Rental\Models\RentalIncrementDetail;
 use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
-use Pranjal\Rental\Models\IncrementAmount;
-use Pranjal\Rental\Models\RentalAgreement;
+use CodeBright\Rental\Models\IncrementAmount;
+use CodeBright\Rental\Models\RentalAgreement;
 
 class RentalAgreementRepository extends Repository
 {
@@ -64,15 +64,15 @@ class RentalAgreementRepository extends Repository
             }
         }
 
-        $this->saveOrUpdateRentalDocument('citizenship', $citizenshipImage, $rentalOwner->citizenship_number, );
-        $this->saveOrUpdateRentalDocument('cheque', $chequeImage, $rentalOwner->citizenship_number);
+        $this->saveOrUpdateRentalDocument('citizenship', $citizenshipImage, $rentalOwner->id, );
+        $this->saveOrUpdateRentalDocument('cheque', $chequeImage, $rentalOwner->id);
 
         return $message;
     }
 
-    private function saveOrUpdateRentalDocument($type, $image, $citizenshipNumber)
+    private function saveOrUpdateRentalDocument($type, $image, $ownerId)
     {
-        $document = RentalDocument::where('owner_citizenship_number', $citizenshipNumber)
+        $document = RentalDocument::where('owner_id', $ownerId)
             ->where('type', $type)
             ->first();
 
@@ -90,15 +90,15 @@ class RentalAgreementRepository extends Repository
                 RentalDocument::create([
                     'type' => $type,
                     'image_path' => $imagePath,
-                    'owner_citizenship_number' => $citizenshipNumber
+                    'owner_id' => $ownerId,
                 ]);
             }
         }
     }
 
-    private function saveOrUpdateAgreementDocument($type,$image, $rentalAgreementId,$citizenshipNumber)
+    private function saveOrUpdateAgreementDocument($type,$image, $rentalAgreementId,$ownerId)
     {
-        $document = RentalDocument::where('rental_agreement_id', $rentalAgreementId)
+        $document = RentalDocument::where('agreement_id', $rentalAgreementId)
             ->where('type', $type)
             ->first();
             if ($image instanceof UploadedFile) {
@@ -115,8 +115,8 @@ class RentalAgreementRepository extends Repository
                     RentalDocument::create([
                         'type' => $type,
                         'image_path' => $imagePath,
-                        'rental_agreement_id' =>$rentalAgreementId,
-                        'owner_citizenship_number' => $citizenshipNumber,
+                        'agreement_id' =>$rentalAgreementId,
+                        'owner_id' => $ownerId,
                     ]);
                 }
             }
@@ -142,7 +142,7 @@ class RentalAgreementRepository extends Repository
         $data['added_by'] = $employeeId;
 
         $created=RentalAgreement::create($data);
-        $this->saveOrUpdateAgreementDocument('agreement',$AgreementDocument,$created->id,$created->owner->citizenship_number);            
+        $this->saveOrUpdateAgreementDocument('agreement',$AgreementDocument,$created->id,$created->owner->id);            
         return $created;
     }
 
@@ -153,7 +153,7 @@ class RentalAgreementRepository extends Repository
             $agreementId->update($data);
             $message = "Post Updated Successfully";
         }
-        $this->saveOrUpdateAgreementDocument('agreement',$AgreementDocument,$agreementId->id,$agreementId->owner->citizenship_number);            
+        $this->saveOrUpdateAgreementDocument('agreement',$AgreementDocument,$agreementId->id,$agreementId->owner->id);            
 
         return $message;
     }

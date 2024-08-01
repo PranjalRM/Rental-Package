@@ -1,9 +1,9 @@
 <?php
 
-namespace Pranjal\Rental\Models;
+namespace CodeBright\Rental\Models;
 
-use Pranjal\Rental\Http\Controllers\Rental\RentalOwner;
-use Pranjal\Rental\Models\IncrementAmount;
+use CodeBright\Rental\Http\Controllers\Rental\RentalOwner;
+use CodeBright\Rental\Models\IncrementAmount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,7 +27,7 @@ class RentalAgreement extends Model
 
     public function file()
     {
-        return $this->hasMany(RentalDocument::class,'rental_agreement_id');
+        return $this->hasMany(RentalDocument::class,'agreement_id');
     }
 
     public function scopeSearch($query, $value)

@@ -1,15 +1,15 @@
 <?php
 
-namespace Pranjal\Rental;
+namespace CodeBright\Rental;
 
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
-use Pranjal\Rental\Http\Controllers\Rental\RentalOwner;
-use Pranjal\Rental\Http\Controllers\Rental\AddRental;
-use Pranjal\Rental\Http\Controllers\Rental\RentalCalculation;
-use Pranjal\Rental\Http\Controllers\Rental\Agreement\UpdateAgreement;
-use Pranjal\Rental\Http\Controllers\Rental\Agreement\OwnerAgreement;
-use Pranjal\Rental\Http\Controllers\Rental\Agreement\AddOwnerAgreement;
+use CodeBright\Rental\Http\Controllers\Rental\RentalOwner;
+use CodeBright\Rental\Http\Controllers\Rental\AddRental;
+use CodeBright\Rental\Http\Controllers\Rental\RentalCalculation;
+use CodeBright\Rental\Http\Controllers\Rental\Agreement\UpdateAgreement;
+use CodeBright\Rental\Http\Controllers\Rental\Agreement\OwnerAgreement;
+use CodeBright\Rental\Http\Controllers\Rental\Agreement\AddOwnerAgreement;
 class RentalServiceProvider extends ServiceProvider
 {
     public function boot()

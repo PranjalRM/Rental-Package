@@ -1,17 +1,17 @@
 <?php
 
-namespace Pranjal\Rental\Http\Controllers\Rental\Agreement;
+namespace CodeBright\Rental\Http\Controllers\Rental\Agreement;
 
-use Pranjal\Rental\Models\RentalAgreement;
-use Pranjal\Rental\Models\RentalIncrementDetail;
+use CodeBright\Rental\Models\RentalAgreement;
+use CodeBright\Rental\Models\RentalIncrementDetail;
 use App\Traits\WithNotify;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Http\UploadedFile;
 use Carbon\Carbon;
 use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
-use Pranjal\Rental\Http\Repositories\RentalAgreementRepository;
-use Pranjal\Rental\Models\RentalDocument;
+use CodeBright\Rental\Http\Repositories\RentalAgreementRepository;
+use CodeBright\Rental\Models\RentalDocument;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
@@ -27,31 +27,67 @@ class UpdateAgreement extends Component
     public $editMode = false;
 
     public $agreementId;
+    #[validate('required|nullable')]
     public $incrementForms = [];
-    public $ownerId;
+
+    #[validate('required|string')]
     public $district = '';
+
+    #[validate('required|string')]
     public $municipality = '';
+
+    #[validate('required|string')]
     public $place_name = '';
+
+    #[validate('required|integer')]
     public $ward_no = '';
+
+    #[validate('required|integer')]
     public $floors_num = '';
+
+    #[validate('required|integer')]
     public $agreement_floor = '';
+
+    #[validate('required|integer')]
     public $area_floor = '';
+
+    #[validate('required|integer')]
     public $kitta_no = '';
+
+    #[validate('required')]
     public $witnesses = '';
+
+    #[validate('required')]
     public $agreement_date = '';
+
     public $agreement_end_date = '';
+
+    #[validate('required|integer')]
     public $agreement_period_year = '';
+
+    #[validate('required|numeric|between:1,12|nullable')]
     public $agreement_period_month = '';
+
+    #[validate('required')]
     public $security_deposit = '';
+
+    #[validate('required')]
     public $electricity_rate = '';
+
+    #[validate('required')]
     public $gross_rental_amount = '';
+    
+    #[validate('required')]
     public $tds_payable = '10';
+    
     public $tds='';
     public $net_rental_amount = '';
     public $advance = '';
     public $payment_period = 'monthly';
     public $remarks = '';
+    #[validate('required|mimes:pdf|max:7168')]
     public $agreementDocument = '';
+
     public $existingAgreementDocument = '';
     protected $model;
     private RentalAgreementRepository $repository;
@@ -114,7 +150,7 @@ class UpdateAgreement extends Component
                     'next_increment_date' => '',
                 ];
             }
-            $document = RentalDocument::where('rental_agreement_id', $this->agreementId)->where('type', 'agreement')->first();
+            $document = RentalDocument::where('agreement_id', $this->agreementId)->where('type', 'agreement')->first();
             $this->existingAgreementDocument  = $document ? $document->image_path : null;
         }
     }

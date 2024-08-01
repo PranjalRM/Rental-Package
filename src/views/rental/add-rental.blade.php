@@ -6,22 +6,22 @@
                 <legend>General Information</legend>
                 <div class="row tw-gap-y-3">
                     <div class="form-group col-md-4">
-                        <x-form.text-input name="owner_name" label="Owner Name" :required="true"
+                        <x-form.text-input wire:model.live="owner_name" label="Owner Name" :required="true"
                             prepend />
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.text-input name="contact_number" label="Contact Number"
+                        <x-form.text-input wire:model.live="contact_number" label="Contact Number"
                             prepend />
                     </div>
                     
                     <div class="form-group col-md-4">
-                        <x-form.text-input name="grandfather_name" label="Grand Father/Father-in-law Name" :required="true"
+                        <x-form.text-input wire:model.live="grandfather_name" label="Grand Father/Father-in-law Name" :required="true"
                             prepend />
                     </div>
                     
                     <div class="form-group col-md-4">
-                        <x-form.text-input name="father_name" label="Father/Husband Name" :required="true"
+                        <x-form.text-input wire:model.live="father_name" label="Father/Husband Name" :required="true"
                             prepend />
                     </div>
                     
@@ -43,7 +43,7 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.list-input name="primary_bank_name" label="Bank Name" :required="true"
+                        <x-form.list-input wire:model.live="primary_bank_name" label="Bank Name" :required="true"
                             prepend>
                             @foreach ($this->bankArray as $bank)
                                 <option value="{{ $bank->id }}">{{ $bank->name }}</option>
@@ -52,17 +52,17 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.text-input name="primary_account_name" label="Account Name" :required="true"
+                        <x-form.text-input wire:model.live="primary_account_name" label="Account Name" :required="true"
                             prepend />
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.text-input name="primary_account_number" label="Account Number" :required="true"
+                        <x-form.text-input wire:model.live="primary_account_number" label="Account Number" :required="true"
                             prepend />
                     </div>
                     
                     <div class="form-group col-md-4">
-                        <x-form.text-input name="primary_bank_branch" label="Bank Branch" :required="true"
+                        <x-form.text-input wire:model.live="primary_bank_branch" label="Bank Branch" :required="true"
                             prepend />
                     </div>
 
@@ -91,7 +91,7 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.list-input name="branch_id" label="Branch" :required="true"
+                        <x-form.list-input wire:model.live="branch_id" label="Branch" :required="true"
                             prepend>
                             @foreach ($this->branchName as $branch)
                                 <option value="{{ $branch->id }}">{{ $branch->name }}</option>
@@ -100,7 +100,7 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.list-input name="oc_id" label="Operation Center"
+                        <x-form.list-input wire:model.live="oc_id" label="Operation Center"
                             prepend>
                             @foreach ($this->subBranchName as $subBranch)
                                 <option value="{{ $subBranch->id }}">{{ $subBranch->name }}</option>
@@ -109,7 +109,7 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.list-input name="rental_type_id" label="Rental Type"
+                        <x-form.list-input wire:model.live="rental_type_id" label="Rental Type"
                             prepend>
                             @foreach ($this->rentalTypeArray as $rentalType)
                                 <option value="{{ $rentalType->id }}">{{ $rentalType->name }}</option>
@@ -118,27 +118,27 @@
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.text-input name="pop_id" label="Sub Ledger Code"
+                        <x-form.text-input wire:model.live="pop_id" label="Sub Ledger Code"
                             prepend />
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.list-input name="location_type" label="Location Type" :options="['inside valley' => 'inside valley', 'outside valley' => 'outside valley']"
+                        <x-form.list-input wire:model.live="location_type" label="Location Type" :options="['inside valley' => 'inside valley', 'outside valley' => 'outside valley']"
                             prepend></x-form.list-input>
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.list-input name="payment_type" label="Payment Type" :options="['Vianet' => 'Vianet', 'Landlord' => 'Landlord', 'Lease' => 'Lease']"
+                        <x-form.list-input wire:model.live="payment_type" label="Payment Type" :options="['Vianet' => 'Vianet', 'Landlord' => 'Landlord', 'Lease' => 'Lease']"
                             prepend></x-form.list-input>
                     </div>
 
                     <div class="form-group col-md-4">
-                        <x-form.text-input name="location" label="Location" :required="true"
+                        <x-form.text-input wire:model.live="location" label="Location" :required="true"
                             prepend />
                     </div>
 
                     <div class="form-group ">
-                        <x-form.text-area name="termination_clause" label="Termination Clause"
+                        <x-form.text-area wire:model.live="termination_clause" label="Termination Clause"
                             prepend />
                     </div>
                     <div class="form-group col-md-4">
@@ -150,7 +150,7 @@
                                 </a>
                             </div>
                         @endif
-                        <x-form.text-input wire:model="citizenshipImage" type="file" name="citizenshipImage" label="Citizenship (pdf, size 7 Mb)" accept="application/pdf,image/*" :required="$currentAction === 'add'"/>
+                        <x-form.text-input wire:model.live="citizenshipImage" type="file" name="citizenshipImage" label="Citizenship (pdf, size 7 Mb)" accept="application/pdf,image/*" :required="$currentAction === 'add'"/>
                     </div>
 
                     <div class="form-group col-md-4">
@@ -162,7 +162,7 @@
                                 </a>
                             </div>
                         @endif
-                        <x-form.text-input wire:model="chequeImage" type="file" name="chequeImage" label="Cheque (pdf, size 7 Mb)" accept="application/pdf,image/*" :required="$currentAction === 'add'"/>
+                        <x-form.text-input wire:model.live="chequeImage" type="file" name="chequeImage" label="Cheque (pdf, size 7 Mb)" accept="application/pdf,image/*" :required="$currentAction === 'add'"/>
                     </div>
 
                     <div class="mt-3 text-center">

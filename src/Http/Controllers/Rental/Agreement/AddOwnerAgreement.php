@@ -1,24 +1,24 @@
 <?php
 
-namespace Pranjal\Rental\Http\Controllers\Rental\Agreement;
+namespace CodeBright\Rental\Http\Controllers\Rental\Agreement;
 
 use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
 use App\Models\Rental\IncrementAmount;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
 use App\Traits\WithNotify;
-use Pranjal\Rental\Models\RentalAgreement;
-use Pranjal\Rental\Models\RentalOwners;
+use CodeBright\Rental\Models\RentalAgreement;
+use CodeBright\Rental\Models\RentalOwners;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
-use Pranjal\Rental\Models\RentalDocument;
-use Pranjal\Rental\Models\RentalIncrementDetail;
+use CodeBright\Rental\Models\RentalDocument;
+use CodeBright\Rental\Models\RentalIncrementDetail;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Employee\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
-use Pranjal\Rental\Http\Repositories\RentalAgreementRepository;
+use CodeBright\Rental\Http\Repositories\RentalAgreementRepository;
 
 class AddOwnerAgreement extends Component
 {
@@ -34,13 +34,13 @@ class AddOwnerAgreement extends Component
     #[validate('required|nullable')]
     public $incrementForms = [];
 
-    #[validate('required')]
+    #[validate('required|string')]
     public $district = '';
 
-    #[validate('required')]
+    #[validate('required|string')]
     public $municipality = '';
 
-    #[validate('required')]
+    #[validate('required|string')]
     public $place_name = '';
 
     #[validate('required|integer')]
@@ -97,7 +97,7 @@ class AddOwnerAgreement extends Component
     #[validate('required')]
     public $remarks = '';
 
-    public $amendment_child_id= '';
+    public $amendment_child_id;
 
     #[validate('required|mimes:pdf|max:7168')]
     public $agreementDocument= '';
@@ -199,6 +199,7 @@ class AddOwnerAgreement extends Component
             'advance' => 'advance',
             'payment_period' => 'payment_period',
             'remarks' =>'remarks',
+            'amendment_child_id' => 'amendment_child_id',
         ];
     }
     
@@ -217,7 +218,6 @@ class AddOwnerAgreement extends Component
                 }
             }
             $data['rental_owner_id'] = $this->ownerId ?? $this->copyOwnerId;
-            $data['amendment_child_id'] = $this->ownerId ?? $this->copyOwnerId;
             $created = $this->repository->saveAgreement($data,$this->agreementDocument);
             $rentalAgreementId = $created->id;
 

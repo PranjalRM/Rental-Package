@@ -1,8 +1,8 @@
 <?php
 
-namespace Pranjal\Rental\Models;
+namespace CodeBright\Rental\Models;
 
-use Pranjal\Rental\Models\RentalAgreement;
+use CodeBright\Rental\Models\RentalAgreement;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;

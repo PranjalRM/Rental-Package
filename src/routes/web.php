@@ -2,12 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
-use Pranjal\Rental\Http\Controllers\Rental\RentalOwner;
-use Pranjal\Rental\Http\Controllers\Rental\RentalCalculation;
-use Pranjal\Rental\Http\Controllers\Rental\AddRental;
-use Pranjal\Rental\Http\Controllers\Rental\Agreement\OwnerAgreement;
-use Pranjal\Rental\Http\Controllers\Rental\Agreement\AddOwnerAgreement;
-use Pranjal\Rental\Http\Controllers\Rental\Agreement\UpdateAgreement;
+use CodeBright\Rental\Http\Controllers\Rental\RentalOwner;
+use CodeBright\Rental\Http\Controllers\Rental\RentalCalculation;
+use CodeBright\Rental\Http\Controllers\Rental\AddRental;
+use CodeBright\Rental\Http\Controllers\Rental\Agreement\OwnerAgreement;
+use CodeBright\Rental\Http\Controllers\Rental\Agreement\AddOwnerAgreement;
+use CodeBright\Rental\Http\Controllers\Rental\Agreement\UpdateAgreement;
 
 Route::middleware(['auth','web'])->group (function (){
     Route::get('rental/calculation',RentalCalculation::class)->name('rentalCalculation');

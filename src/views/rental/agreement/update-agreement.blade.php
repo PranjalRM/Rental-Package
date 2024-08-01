@@ -21,39 +21,39 @@
             <legend>Basic Detail</legend>
             <div class="row tw-gap-y-3">
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="district" name="district" label="District (Location of Land/Building)" prepend />
+                    <x-form.text-input wire:model.live="district" name="district" label="District (Location of Land/Building)" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="municipality" name="municipality" label="Municipality" prepend />
+                    <x-form.text-input wire:model.live="municipality" name="municipality" label="Municipality" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="place_name" name="place_name" label="Place/City Name" prepend />
+                    <x-form.text-input wire:model.live="place_name" name="place_name" label="Place/City Name" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="ward_no" name="ward_no" label="Ward Number" prepend />
+                    <x-form.text-input wire:model.live="ward_no" name="ward_no" label="Ward Number" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="floors_num" name="floors_num" label="Total Number of Floor in House" prepend />
+                    <x-form.text-input wire:model.live="floors_num" name="floors_num" label="Total Number of Floor in House" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="agreement_floor" name="agreement_floor" label="Agreement for which Floor/s" prepend />
+                    <x-form.text-input wire:model.live="agreement_floor" name="agreement_floor" label="Agreement for which Floor/s" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="area_floor" name="area_floor" label="Area of Floor/room (Sq.ft)" prepend />
+                    <x-form.text-input wire:model.live="area_floor" name="area_floor" label="Area of Floor/room (Sq.ft)" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="kitta_no" name="kitta_no" label="Kitta Number" prepend />
+                    <x-form.text-input wire:model.live="kitta_no" name="kitta_no" label="Kitta Number" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="witnesses" name="witnesses" label="Name and Address of Witnesses" prepend />
+                    <x-form.text-input wire:model.live="witnesses" name="witnesses" label="Name and Address of Witnesses" prepend />
                 </div>
             </div>
         </fieldset>
@@ -83,11 +83,11 @@
             <legend>Rental Detail</legend>
             <div class="row tw-gap-y-3">
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="security_deposit" name="security_deposit" label="Security Deposit" prepend />
+                    <x-form.text-input wire:model.live="security_deposit" name="security_deposit" label="Security Deposit" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="electricity_rate" name="electricity_rate" label="Electricity Rate" prepend />
+                    <x-form.text-input wire:model.live="electricity_rate" name="electricity_rate" label="Electricity Rate" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
@@ -103,15 +103,15 @@
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="tds" name="tds" label="TDS" class="form-control bg-gray-200" />
+                    <x-form.text-input wire:model="tds" name="tds" label="TDS" class="form-control bg-gray-200" readonly/>
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="advance" name="advance" label="Advance" prepend />
+                    <x-form.text-input wire:model.live="advance" name="advance" label="Advance" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.list-input wire:model="payment_period" name="payment_period" label="Payment Method" :options="['monthly' => 'Monthly', 'quarterly' => 'Quarterly', 'quadrimester' => 'Quadrimester']" prepend></x-form.list-input>
+                    <x-form.list-input wire:model.live="payment_period" name="payment_period" label="Payment Method" :options="['monthly' => 'Monthly', 'quarterly' => 'Quarterly', 'quadrimester' => 'Quadrimester']" prepend></x-form.list-input>
                 </div>
             </div>
         </fieldset>
@@ -180,7 +180,7 @@
                         </a>
                     </div>
                 @endif
-                    <x-form.text-input wire:model="agreementDocument" type="file" name="agreementDocument" label="Upload Documents (pdf, size 7 Mb)" accept="application/pdf,image/*" />
+                    <x-form.text-input wire:model.live="agreementDocument" type="file" name="agreementDocument" label="Upload Documents (pdf, size 7 Mb)" accept="application/pdf,image/*" />
                 </div>
 
                 <div class="form-group col-md-4">

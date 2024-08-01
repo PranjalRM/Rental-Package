@@ -8,39 +8,39 @@
             <legend>Basic Detail</legend>
             <div class="row tw-gap-y-3">
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="district" name="district" label="District (Location of Land/Building)" :required="true" prepend />
+                    <x-form.text-input wire:model.live="district" name="district" label="District (Location of Land/Building)" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="municipality" name="municipality" label="Municipality" :required="true" prepend />
+                    <x-form.text-input wire:model.live="municipality" name="municipality" label="Municipality" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="place_name" name="place_name" label="Place/City Name" :required="true" prepend />
+                    <x-form.text-input wire:model.live="place_name" name="place_name" label="Place/City Name" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="ward_no" name="ward_no" label="Ward Number" :required="true" prepend />
+                    <x-form.text-input wire:model.live="ward_no" name="ward_no" label="Ward Number" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="floors_num" name="floors_num" label="Total Number of Floor in House" :required="true" prepend />
+                    <x-form.text-input wire:model.live="floors_num" name="floors_num" label="Total Number of Floor in House" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="agreement_floor" name="agreement_floor" label="Agreement for which Floor/s" :required="true" prepend />
+                    <x-form.text-input wire:model.live="agreement_floor" name="agreement_floor" label="Agreement for which Floor/s" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="area_floor" name="area_floor" label="Area of Floor/room (Sq.ft)" :required="true" prepend />
+                    <x-form.text-input wire:model.live="area_floor" name="area_floor" label="Area of Floor/room (Sq.ft)" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="kitta_no" name="kitta_no" label="Kitta Number" :required="true" prepend />
+                    <x-form.text-input wire:model.live="kitta_no" name="kitta_no" label="Kitta Number" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="witnesses" name="witnesses" label="Name and Address of Witnesses" :required="true" prepend />
+                    <x-form.text-input wire:model.live="witnesses" name="witnesses" label="Name and Address of Witnesses" :required="true" prepend />
                 </div>
             </div>
         </fieldset>
@@ -70,11 +70,11 @@
             <legend>Rental Detail</legend>
             <div class="row tw-gap-y-3">
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="security_deposit" name="security_deposit" label="Security Deposit" :required="true" prepend />
+                    <x-form.text-input wire:model.live="security_deposit" name="security_deposit" label="Security Deposit" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="electricity_rate" name="electricity_rate" label="Electricity Rate" :required="true" prepend />
+                    <x-form.text-input wire:model.live="electricity_rate" name="electricity_rate" label="Electricity Rate" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
@@ -94,11 +94,11 @@
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="advance" name="advance" label="Advance" :required="true" prepend />
+                    <x-form.text-input wire:model.live="advance" name="advance" label="Advance" :required="true" prepend />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.list-input wire:model="payment_period" name="payment_period" label="Payment Method" :options="['monthly' => 'Monthly', 'quarterly' => 'Quarterly', 'quadrimester' => 'Quadrimester']" :required="true" prepend></x-form.list-input>
+                    <x-form.list-input wire:model.live="payment_period" name="payment_period" label="Payment Method" :options="['monthly' => 'Monthly', 'quarterly' => 'Quarterly', 'quadrimester' => 'Quadrimester']" :required="true" prepend></x-form.list-input>
                 </div>
             </div>
         </fieldset>
@@ -117,11 +117,11 @@
                         <label for="incrementType">Increment By:</label>
                         <div class="d-flex flex-wrap">
                             <div class="form-check mr-4 mb-2">
-                                <input class="form-check-input" type="radio" x-model="form.incrementType" value="percent" :id="'percent_' + index">
+                                <input class="form-check-input" type="radio" x-model="form.incrementType" value="percent" :id="'percent_' + index" :name="'incrementType_' + index">
                                 <label class="form-check-label ml-1" :for="'percent_' + index">Percent</label>
                             </div>
                             <div class="form-check mr-4 mb-2">
-                                <input class="form-check-input ml-3" type="radio" x-model="form.incrementType" value="amount" :id="'amount_' + index">
+                                <input class="form-check-input ml-3" type="radio" x-model="form.incrementType" value="amount" :id="'amount_' + index" :name="'incrementType_' + index">
                                 <label class="form-check-label ml-4" :for="'amount_' + index">Amount</label>
                             </div>
                         </div>
@@ -159,11 +159,11 @@
             <legend>Other Detail</legend>
             <div class="row tw-gap-y-3">
                 <div class="form-group col-md-4">
-                    <x-form.text-input wire:model="agreementDocument" type="file" name="agreementDocument" label="Upload Documents (pdf, size 7 Mb)" accept="application/pdf,image/*" :required="true" />
+                    <x-form.text-input wire:model.live="agreementDocument" type="file" name="agreementDocument" label="Upload Documents (pdf, size 7 Mb)" accept="application/pdf,image/*" :required="true" />
                 </div>
 
                 <div class="form-group col-md-4">
-                    <x-form.text-area wire:model="remarks" name="remarks" label="Remarks" :required="true" prepend />
+                    <x-form.text-area wire:model.live="remarks" name="remarks" label="Remarks" :required="true" prepend />
                 </div>
             </div>
         </fieldset>
