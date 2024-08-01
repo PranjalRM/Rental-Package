@@ -9,7 +9,9 @@ use App\Traits\WithDataTable;
 use Maatwebsite\Excel\Facades\Excel;
 use CodeBright\Rental\Exports\RentalCalculationExport;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 
+#[Title('Rental Calculation')]
 class RentalCalculation extends Component
 {
     use WithDataTable;

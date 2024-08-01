@@ -17,7 +17,9 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Title;
 
+#[Title('Update Agreement')]
 class UpdateAgreement extends Component
 {
     use WithFileUploads, WithNotify;
@@ -82,9 +84,16 @@ class UpdateAgreement extends Component
     
     public $tds='';
     public $net_rental_amount = '';
+
+    #[validate('required')]
     public $advance = '';
+
+    #[validate('required')]
     public $payment_period = 'monthly';
+
+    #[validate('required')]
     public $remarks = '';
+
     #[validate('required|mimes:pdf|max:7168')]
     public $agreementDocument = '';
 
@@ -122,6 +131,10 @@ class UpdateAgreement extends Component
         foreach ($fillableAttributes as $key => $value) {
             $this->{$key} = $value;
         }
+    }
+    public function back()
+    {
+        return redirect()->route('agreementInfo', ['ownerId' => $this->agreement->rental_owner_id]);
     }
     private function loadAgreementDetails()
     {
@@ -242,8 +255,6 @@ class UpdateAgreement extends Component
         }
     }
 
-    
-
     public function updated($propertyName, $index)
     {
         if (in_array($propertyName, ['agreement_date', 'agreement_period_year', 'agreement_period_month'])) {
@@ -322,19 +333,7 @@ class UpdateAgreement extends Component
     public function removeIncrementForm($index)
     {
         unset($this->incrementForms[$index]);
-        $this->incrementForms = array_values($this->incrementForms); // Reset keys after unset
-    }
-
-    private function saveDocument($file, $type)
-    {
-        if ($file instanceof UploadedFile) {
-            $filePath = $file->store('public/documents');
-            return str_replace('public/', '', $filePath);
-        } elseif (is_string($file)) {
-            return $file;
-        }
-
-        return null;
+        $this->incrementForms = array_values($this->incrementForms);
     }
 
     public function render()
