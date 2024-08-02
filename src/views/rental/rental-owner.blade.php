@@ -98,7 +98,7 @@
                             <div class="btn-group-vertical" role="group" aria-label="Action Buttons">
                             @if ($owner->rental_status == 'Submitted')
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-success" wire:click="approve({{ $owner->id }})">
+                                <button type="button" class="btn btn-success" wire:confirm = "Are you sure you want to approve?" wire:click="approve({{ $owner->id }})">
                                     <i class="bi bi-check-circle"></i> Approve
                                 </button>
                                 
@@ -143,7 +143,4 @@
         </x-slot>
         <x-slot name="pagination"> {{ $this->list->links() }}</x-slot>
     </x-table.table-wrapper>
-
-    <!-- Modal for Reject Reason -->
-    
 </div>

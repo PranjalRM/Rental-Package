@@ -170,8 +170,9 @@
 
         <div class="row">
             <div class="mt-3 text-center">
+                <button type="button" wire:click.live="clear" class="btn btn-secondary">Clear</button>
                 <button type="submit" class="btn btn-primary">Save</button>
-                <button type="button" wire:click="clear" class="btn btn-secondary">Clear</button>
+                <button type="button" class="btn btn-danger" wire:click.dismiss="cancel">Cancel</button>
             </div>
         </div>
     </form>

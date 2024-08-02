@@ -89,7 +89,7 @@
                             <div class="btn-group-vertical" role="group" aria-label="Action Buttons">
                                 @if ($agreement->agreement_status == 'Submitted')
                                     <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-success" wire:click="approve({{ $agreement->id }})">
+                                        <button type="button" class="btn btn-success" wire:confrim = "Are you sure you want to approve?" wire:click="approve({{ $agreement->id }})">
                                             <i class="bi bi-check-circle"></i> Approve
                                         </button>
 
@@ -106,20 +106,22 @@
                                     <x-table.action-option type="edit" wire:click="edit({{ $agreement->id }})" />
                                     <x-table.action-option type="delete" wire:confirm="Are you sure to delete this item?" wire:click="delete({{ $agreement->id }})" />
                                 </div>
-                                @else 
-                                <button type="button" class="btn btn-danger"  data-bs-toggle="modal" data-bs-target="#model">
-                                        <i class="bi bi-x-circle"></i> Terminate
+                                @else
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-danger"  data-bs-toggle="modal" data-bs-target="#model">
+                                            <i class="bi bi-x-circle"></i> Terminate
+                                        </button>
+                                    @endif
+                                    <button type="button" class="btn btn-info" wire:click="view({{ $agreement->id }})">
+                                        <i class="bi bi-file-text"></i> View
                                     </button>
-                                @endif
-                                <button type="button" class="btn btn-info" wire:click="view({{ $agreement->id }})">
-                                    <i class="bi bi-file-text"></i> View
-                                </button>
-                                <button class="btn btn-success dropdown-toggle text-white" type="button" wire:click="export({{ $agreement->id }})">
-                                    <i class="bi bi-files test-white"></i>Export
-                                </button>
-                                <button type="button" class="btn btn-warning text-dark" wire:click="copy({{ $agreement->id }})">
-                                    <i class="bi bi-files text-white"></i> Copy
-                                </button>
+                                    <button class="btn btn-success dropdown-toggle text-white" type="button" wire:click="export({{ $agreement->id }})">
+                                        <i class="bi bi-files test-white"></i>Export
+                                    </button>
+                                    <button type="button" class="btn btn-warning text-dark" wire:click="copy({{ $agreement->id }})">
+                                        <i class="bi bi-files text-white"></i> Copy
+                                    </button>
+                                </div>
                             </div>
                         </x-table.action>
                     </x-table.cell> 

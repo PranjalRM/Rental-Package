@@ -26,6 +26,7 @@ class UpdateAgreement extends Component
 
     public $agreement;
     public $owner;
+    public $ownerId;
     public $editMode = false;
 
     public $agreementId;
@@ -132,15 +133,24 @@ class UpdateAgreement extends Component
             $this->{$key} = $value;
         }
     }
+    public function clear()
+    {
+        $this->resetExcept('editMode','ownerId');
+    }  
     public function back()
     {
-        return redirect()->route('agreementInfo', ['ownerId' => $this->agreement->rental_owner_id]);
+        return redirect()->route('agreementInfo', ['ownerId' => $this->ownerId]);
+    }
+    public function cancel()
+    {
+        return redirect(route('agreementInfo',['ownerId' => $this->ownerId]));
     }
     private function loadAgreementDetails()
     {
         $this->agreement = RentalAgreement::with('rentalIncrementDetail', 'file')->find($this->agreementId);
         if ($this->agreement) {
             $this->owner = $this->agreement->owner;
+            $this->ownerId = $this->agreement->rental_owner_id;
 
             $netIncrement = $this->agreement->rentalIncrementDetail;
             if ($netIncrement) {
@@ -222,7 +232,7 @@ class UpdateAgreement extends Component
             $this->editMode = false;
             DB::commit();
             $this->notify($message)->send();
-            return redirect()->route('agreementInfo', ['ownerId' => $this->agreement->rental_owner_id]);
+            return redirect()->route('agreementInfo', ['ownerId' => $this->ownerId]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Exception Ocuured: ' . $e->getMessage());

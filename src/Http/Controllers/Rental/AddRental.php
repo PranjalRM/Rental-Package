@@ -148,6 +148,11 @@ class AddRental extends Component
         $this->reset();
     }
 
+    public function cancel()
+    {
+        return redirect()->route('rentalInfo');
+    }
+    
     public function render()
     {
         return view('rental::rental.add-rental');

@@ -77,6 +77,12 @@ class OwnerAgreement extends Component
 
     public function delete(RentalAgreement $agreementId)
     {
+        $agreement=RentalDocument::with('documents')->where('agreement_id', $agreementId->id)->get();
+        foreach($agreement as $document){
+            $filePath = $document->image_path;
+            Storage::delete('public/'.$filePath);
+            $document->delete();
+        }
             $agreementId -> delete();
             $message = 'Rental owner deleted successfully';
             unset($this->loadAgreements);
@@ -86,28 +92,8 @@ class OwnerAgreement extends Component
     public function uploadDocument($agreementId)
     {   
         $this->validate();
-        $agreementDocumentPath = RentalDocument::where('agreement_id',$agreementId)
-                ->where('type',$this->documentType)
-                ->first();
-        if($agreementDocumentPath)
-        {
-            if($this->file instanceof UploadedFile){
-                $filePath = $agreementDocumentPath->image_path;
-                Storage::delete('public/'.$filePath);
-                $agreementDocumentPath->image_path = $this->saveDocument($this->file, $this->documentType);
-                    $this->file = $agreementDocumentPath->image_path;
-                    $agreementDocumentPath->save();
-            }
-        } else{
-            $agreement = RentalAgreement::findOrFail($agreementId);
-            $agreementImagePath = $this->saveDocument($this->file, $this->documentType);
-            RentalDocument::create([
-                'type' => $this->documentType,
-                'image_path' => $agreementImagePath ? : null,
-                'agreement_id' =>$agreementId,
-                'owner_id' => $this->owner->id
-            ]);
-        }
+        $this->repository->saveOrUpdateDocuments($this->documentType, $this->file, $this->ownerId,$agreementId);
+
         $this->dispatch('hide-model');
         $message = "Document Uploaded successfully.";
         unset($this->loadAgreements);
@@ -175,19 +161,6 @@ class OwnerAgreement extends Component
     public function render()
     {
         return view('rental::rental.agreement.owner-agreement');
-    }
-
-    private function saveDocument($file, $type)
-    {
-        if ($file instanceof UploadedFile) {
-            $filePath = $file->store('public/documents');
-            $filePath = str_replace('public/', '', $filePath);
-            return $filePath;
-        } elseif (is_string($file)) {
-            return $file;
-        }
-
-        return null;
     }
     
 }

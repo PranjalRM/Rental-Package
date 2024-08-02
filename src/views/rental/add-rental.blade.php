@@ -166,8 +166,9 @@
                     </div>
 
                     <div class="mt-3 text-center">
-                        <button type="submit" class="btn btn-success text-white">{{ $currentAction === 'add' ? 'Add' : 'Update' }}</button>
                         <button type="button" class="btn btn-secondary" wire:click.live="clearForm">Clear</button>
+                        <button type="submit" class="btn btn-success text-white">{{ $currentAction === 'add' ? 'Add' : 'Update' }}</button>
+                        <button type="button" class="btn btn-danger" wire:click.dismiss="cancel">Cancel</button>
                     </div>
                 </div>
             </fieldset>

@@ -3,18 +3,14 @@
 namespace CodeBright\Rental\Http\Repositories;
 
 use CodeBright\Rental\Models\BankCode;
-
 use App\Models\configs\Branch;
 use App\Models\configs\SubBranch;
-
 use CodeBright\Rental\Models\RentalType;
 use CodeBright\Rental\Models\RentalOwners;
 use CodeBright\Rental\Models\RentalDocument;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-
 use App\Models\Employee\Employee;
-
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use CodeBright\Rental\Models\RentalIncrementDetail;
@@ -49,7 +45,6 @@ class RentalAgreementRepository extends Repository
         $authenticatedUserId = Auth::id();
         $employee = Employee::where('user_id', $authenticatedUserId)->first();
         $employeeId = $employee ? $employee->id : null;
-
         $data['added_by'] = $employeeId;
 
         if ($action === 'create') {
@@ -64,85 +59,23 @@ class RentalAgreementRepository extends Repository
             }
         }
 
-        $this->saveOrUpdateRentalDocument('citizenship', $citizenshipImage, $rentalOwner->id, );
-        $this->saveOrUpdateRentalDocument('cheque', $chequeImage, $rentalOwner->id);
+        $this->saveOrUpdateDocuments('citizenship', $citizenshipImage, $rentalOwner->id, );
+        $this->saveOrUpdateDocuments('cheque', $chequeImage, $rentalOwner->id);
 
         return $message;
     }
 
-    private function saveOrUpdateRentalDocument($type, $image, $ownerId)
-    {
-        $document = RentalDocument::where('owner_id', $ownerId)
-            ->where('type', $type)
-            ->first();
-
-        if ($image instanceof UploadedFile) {
-            $filePath = $document ? $document->image_path : null;
-            if ($document) {
-                Storage::delete('public/' . $filePath);
-            }
-
-            $imagePath = $this->saveDocument($image, $type);
-            if ($document) {
-                $document->image_path = $imagePath;
-                $document->save();
-            } else {
-                RentalDocument::create([
-                    'type' => $type,
-                    'image_path' => $imagePath,
-                    'owner_id' => $ownerId,
-                ]);
-            }
-        }
-    }
-
-    private function saveOrUpdateAgreementDocument($type,$image, $rentalAgreementId,$ownerId)
-    {
-        $document = RentalDocument::where('agreement_id', $rentalAgreementId)
-            ->where('type', $type)
-            ->first();
-            if ($image instanceof UploadedFile) {
-                $filePath = $document ? $document->image_path : null;
-                if ($document) {
-                    Storage::delete('public/' . $filePath);
-                }
-    
-                $imagePath = $this->saveDocument($image, $type);
-                if ($document) {
-                    $document->image_path = $imagePath;
-                    $document->save();
-                } else {
-                    RentalDocument::create([
-                        'type' => $type,
-                        'image_path' => $imagePath,
-                        'agreement_id' =>$rentalAgreementId,
-                        'owner_id' => $ownerId,
-                    ]);
-                }
-            }
-    }
-    private function saveDocument($file, $type)
-    {
-        if ($file instanceof UploadedFile) {
-            $filePath = $file->store('public/documents');
-            $filePath = str_replace('public/', '', $filePath);
-            return $filePath;
-        } elseif (is_string($file)) {
-            return $file;
-        }
-        return null;
-    }
     public function saveAgreement($data,$AgreementDocument)
     {
         $authenticatedUserId = Auth::id();
             $employee = Employee::where('user_id', $authenticatedUserId)->first();
-            if ($employee) {
-                $employeeId = $employee->id;
-            }
+            $employeeId = $employee ? $employee->id : null;
+            $data['added_by'] = $employeeId;
+            
         $data['added_by'] = $employeeId;
 
         $created=RentalAgreement::create($data);
-        $this->saveOrUpdateAgreementDocument('agreement',$AgreementDocument,$created->id,$created->owner->id);            
+        $this->saveOrUpdateDocuments('agreement',$AgreementDocument,$created->owner->id,$created->id);            
         return $created;
     }
 
@@ -153,8 +86,8 @@ class RentalAgreementRepository extends Repository
             $agreementId->update($data);
             $message = "Post Updated Successfully";
         }
-        $this->saveOrUpdateAgreementDocument('agreement',$AgreementDocument,$agreementId->id,$agreementId->owner->id);            
 
+        $this->saveOrUpdateDocuments('agreement',$AgreementDocument,$agreementId->owner->id,$agreementId->id);            
         return $message;
     }
 
@@ -169,6 +102,50 @@ class RentalAgreementRepository extends Repository
         IncrementAmount::where('rental_agreement_id', $rentalAgreementId)->delete();
         IncrementAmount::insert($incrementAmounts);
     }
+
+    public function saveOrUpdateDocuments($type,$image, $ownerId ,$rentalAgreementId = null)
+    {
+        $query = RentalDocument::where('type', $type);
+
+        if ($rentalAgreementId) {
+            $query = $query->where('agreement_id', $rentalAgreementId);
+        } else {
+            $query = $query->where('owner_id',$ownerId);
+        }
+
+        $document = $query->first();
+        if ($image instanceof UploadedFile) {
+            $filePath = $document ? $document->image_path : null;
+            if ($document && $filePath) {
+                Storage::delete('public/'. $filePath);
+            }
+
+            $imagePath = $this->saveDocument($image, $type);
+
+            if ($document) {
+                $document->image_path = $imagePath;
+                $document->save();
+            } else {
+                RentalDocument::create([
+                    'type' => $type,
+                    'image_path' => $imagePath,
+                    'owner_id' => $ownerId,
+                    'agreement_id' => $rentalAgreementId,
+                ]);
+            }
+        }
+    }
+    private function saveDocument($file, $type)
+    {
+        if ($file instanceof UploadedFile) {
+            $filePath = $file->store('public/documents');
+            $filePath = str_replace('public/', '', $filePath);
+            return $filePath;
+        } elseif (is_string($file)) {
+            return $file;
+        }
+        return null;
+    } 
 
     private function IncrementAmountCalculation($rentalAgreementId,$agreementDate,$agreementEndDate,$grossRentalAmount,$tdsPayable,$advance)
     {

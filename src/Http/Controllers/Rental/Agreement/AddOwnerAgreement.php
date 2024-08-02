@@ -231,7 +231,7 @@ class AddOwnerAgreement extends Component
                                                     $this->tds_payable,
                                                     $this->advance);
 
-            redirect(route('agreementInfo',['ownerId' => $this->owner->id]));
+            redirect(route('agreementInfo',['ownerId' => $this->owner->id ?? $this->copyOwnerId]));
             
             DB::commit();
             $message = "Rental agreement saved successfully.";
@@ -247,7 +247,10 @@ class AddOwnerAgreement extends Component
     {
         $this->reset();    
     }
-
+    public function cancel()
+    {
+        return redirect(route('agreementInfo',['ownerId' => $this->ownerId]));
+    }
     public function addIncrementForm()
     {    if (count($this->incrementForms) < 100) {
             $this->incrementForms[] = [
