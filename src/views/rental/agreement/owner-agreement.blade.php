@@ -1,4 +1,14 @@
 <div>
+    <div class="d-flex justify-content-end align-items-end">
+        <a href="{{ route('rentalInfo')}}" class="btn btn-sm btn-gray-800 d-inline-flex justify-right">
+            <x-form.icon class="me-2" color="text-white" />
+            Home
+        </a>
+        <a href="{{ route('rentalCalculation')}}" class="btn btn-sm btn-gray-800 d-inline-flex justify-right">
+            <x-form.icon name="calculator" class="me-2" color="text-white" />
+            Rental Calculation
+        </a>
+    </div>
     <fieldset>
         <legend>Agreement List</legend>
         <div class="row">

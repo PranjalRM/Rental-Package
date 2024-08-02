@@ -1,4 +1,10 @@
 <div>
+    <div class="d-flex justify-content-end align-items-end">
+        <a href="{{ route('rentalInfo')}}" class="btn btn-sm btn-gray-800 d-inline-flex justify-right">
+            <x-form.icon class="me-2" color="text-white" />
+            Home
+        </a>
+    </div>
    <div class="py-1 d-flex items-center">
         <div class="d-flex items-center me-3">
             <x-form.icon name="calculator" size="md" class="me-2" />
