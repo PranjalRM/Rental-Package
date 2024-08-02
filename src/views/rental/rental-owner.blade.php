@@ -1,4 +1,10 @@
 <div>
+    <div class="d-flex justify-content-end align-items-end">
+        <a href="{{ route('rentalCalculation')}}" class="btn btn-sm btn-gray-800 d-inline-flex justify-right">
+            <x-form.icon name="calculator" class="me-2" color="text-white" />
+            Rental Calculation
+        </a>
+    </div>
     <div class="py-1 d-flex gap-2 align-items-center">
         <h2 class="h4 mb-0">
             <x-form.icon name="music-player-fill" size="md" />
