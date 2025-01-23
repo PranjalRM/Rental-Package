@@ -38,7 +38,7 @@ return new class extends Migration
            $table->enum('location_type', ['inside valley','outside valley']);
            $table->enum('payment_type', ['Vianet','LandLord','Lease'])->nullable();
            $table->string('location', 191)->nullable();
-           $table->string('status');
+           $table->string('status')->default(1);
            $table->text('termination_clause')->nullable();
            $table->enum('rental_status', ['Submitted','Approved']);
         

@@ -1,19 +1,21 @@
 <?php
 
-namespace CodeBright\Rental\Http\Controllers\Rental;
+namespace Codebright\Rental\Http\Controllers\Rental\Owner;
 
 use App\Traits\WithDataTable;
 use Livewire\Component;
 use Livewire\Attributes\Title;
-use CodeBright\Rental\Models\RentalOwners;
+use Codebright\Rental\Models\RentalOwners;
 use App\Traits\WithNotify;
 use Livewire\Attributes\Validate;
-use CodeBright\Rental\Models\RentalReject;
+use Codebright\Rental\Models\RentalReject;
 use Livewire\Attributes\Computed;
 use App\Models\Employee\Employee;
 use Illuminate\Support\Facades\Auth;
-use CodeBright\Rental\Models\RentalDocument;
+use Codebright\Rental\Models\RentalDocument;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
+use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
 
 #[Title('Rental Owner')]
 class RentalOwner extends Component
@@ -90,12 +92,17 @@ class RentalOwner extends Component
         $this->reason = '';
     }
 
+    public function electricityBill(RentalOwners $ownerId)
+    {
+        return redirect()->route('viewElectricityBill', ['ownerId' => $ownerId]);
+    }
+
     public function agreement(RentalOwners $ownerId)
     {
         return redirect()->route('agreementInfo',['ownerId' => $ownerId]);
     }
     public function render()
     {   
-        return view('rental::rental.rental-owner');
+        return view('rental::rental.owner.rental-owner');
     }
 }

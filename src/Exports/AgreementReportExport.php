@@ -1,12 +1,9 @@
 <?php
 
-namespace CodeBright\Rental\Exports;
+namespace Codebright\Rental\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings; 
-use CodeBright\Rental\Models\RentalAgreement;
-use CodeBright\Rental\Models\IncrementAmount;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;

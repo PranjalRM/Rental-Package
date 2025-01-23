@@ -1,6 +1,6 @@
 <?php
 
-namespace CodeBright\Rental\Models;
+namespace Codebright\Rental\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +16,6 @@ class RentalIncrementDetail extends Model
     
     public function rentalAgreement()
     {
-        return $this->belongsTo(RentalAgreement::class);
+        return $this->belongsTo(RentalAgreement::class, 'rental_agreement_id');
     }
 }

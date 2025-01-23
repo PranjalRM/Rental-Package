@@ -12,13 +12,13 @@
     },
     "autoload": {
         "psr-4": {
-            "CodeBright\\Rental\\": "src/"
+            "Codebright\\Rental\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "CodeBright\\Rental\\RentalServiceProvider"
+                "Codebright\\Rental\\RentalServiceProvider"
             ]
         }
     }

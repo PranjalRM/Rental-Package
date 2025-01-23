@@ -1,17 +1,17 @@
 <?php
 
-namespace CodeBright\Rental\Http\Controllers\Rental\Agreement;
+namespace Codebright\Rental\Http\Controllers\Rental\Agreement;
 
-use CodeBright\Rental\Models\RentalAgreement;
-use CodeBright\Rental\Models\RentalIncrementDetail;
+use Codebright\Rental\Models\RentalAgreement;
+use Codebright\Rental\Models\RentalIncrementDetail;
 use App\Traits\WithNotify;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Http\UploadedFile;
 use Carbon\Carbon;
 use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
-use CodeBright\Rental\Http\Repositories\RentalAgreementRepository;
-use CodeBright\Rental\Models\RentalDocument;
+use Codebright\Rental\Http\Repositories\RentalAgreementRepository;
+use Codebright\Rental\Models\RentalDocument;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
@@ -70,22 +70,22 @@ class UpdateAgreement extends Component
     #[validate('required|numeric|between:1,12|nullable')]
     public $agreement_period_month = '';
 
-    #[validate('required')]
+    #[validate('required|integer|min:0')]
     public $security_deposit = '';
 
-    #[validate('required')]
+    #[validate('required|integer|min:0')]
     public $electricity_rate = '';
 
-    #[validate('required')]
+    #[validate('required|integer|min:0')]
     public $gross_rental_amount = '';
-    
-    #[validate('required')]
-    public $tds_payable = '10';
-    
-    public $tds='';
+
+    #[validate('required|integer|min:0')]
+    public $tds = '10';
+
+    public $tds_amount = '';
     public $net_rental_amount = '';
 
-    #[validate('required')]
+    #[validate('required|integer|min:0')]
     public $advance = '';
 
     #[validate('required')]
@@ -94,7 +94,6 @@ class UpdateAgreement extends Component
     #[validate('required')]
     public $remarks = '';
 
-    #[validate('required|mimes:pdf|max:7168')]
     public $agreementDocument = '';
 
     public $existingAgreementDocument = '';
@@ -107,14 +106,26 @@ class UpdateAgreement extends Component
         $this->repository = new RentalAgreementRepository;
     }
 
+    public function rules()
+    {
+        return [
+            'incrementForms.*.incrementType' => 'string|in:percent,amount',
+            'incrementForms.*.increment_percent' => 'nullable|required_if:incrementForms.*.incrementType,percent|numeric|min:0|max:100',
+            'incrementForms.*.increment_amount' => 'nullable|required_if:incrementForms.*.incrementType,amount|numeric|min:0',
+            'incrementForms.*.increment_after' => 'numeric|min:1',
+            'agreementDocument' => [...($this->existingAgreementDocument != null ? ['nullable'] : ['required']), 'mimes:pdf', 'max:7168'],
+
+        ];
+    }
+
     public function mount($agreementId, $agreementEditId = null)
     {
         if ($agreementEditId) {
-                $this->editMode = true;
-                $this->agreementId = $agreementEditId;
-                $this->loadAgreementDetails();
-                $this->fillFormModel($agreementEditId);
-        }elseif($agreementId){
+            $this->editMode = true;
+            $this->agreementId = $agreementEditId;
+            $this->loadAgreementDetails();
+            $this->fillFormModel($agreementEditId);
+        } elseif ($agreementId) {
             $this->loadAgreementDetails();
             $this->fillformModel($agreementId);
         }
@@ -127,7 +138,7 @@ class UpdateAgreement extends Component
         $attributes = $row->getAttributes();
         $guarded = $row->getGuarded();
         $fillableAttributes = array_diff_key($attributes, array_flip($guarded));
-        
+
         foreach ($fillableAttributes as $key => $value) {
             $this->{$key} = $value;
         }
@@ -143,15 +154,18 @@ class UpdateAgreement extends Component
             $this->owner = $this->agreement->owner;
 
             $netIncrement = $this->agreement->rentalIncrementDetail;
+            // dd($netIncrement);
             if ($netIncrement) {
                 foreach ($netIncrement as $increment) {
-                    $this->incrementForms[] = [
-                        'incrementType' => $increment->increment_percent !== null ? 'percent' : 'amount',
-                        'increment_percent' => $increment->increment_percent,
-                        'increment_amount' => $increment->increment_amount, 
-                        'increment_after' => $increment->increment_after,
-                        'next_increment_date' => $increment->next_increment,
-                    ];
+                    if ($increment->increment_percent !== null || $increment->increment_amount !== null || $increment->increment_after !== null) {
+                        $this->incrementForms[] = [
+                            'incrementType' => $increment->increment_percent !== null ? 'percent' : 'amount',
+                            'increment_percent' => $increment->increment_percent,
+                            'increment_amount' => $increment->increment_amount,
+                            'increment_after' => $increment->increment_after,
+                            'next_increment_date' => $increment->next_increment,
+                        ];
+                    }
                 }
             }
             if (empty($this->incrementForms)) {
@@ -173,7 +187,7 @@ class UpdateAgreement extends Component
         return [
             'id' => 'agreementId',
             'district' => 'district',
-            'municipality' =>'municipality',
+            'municipality' => 'municipality',
             'place_name' => 'place_name',
             'ward_no' => 'ward_no',
             'floors_num' => 'floors_num',
@@ -185,40 +199,61 @@ class UpdateAgreement extends Component
             'agreement_end_date' => 'agreement_end_date',
             'agreement_period_year' => 'agreement_period_year',
             'agreement_period_month' => 'agreement_period_month',
-            'security_deposit' =>'security_deposit',
+            'security_deposit' => 'security_deposit',
             'electricity_rate' => 'electricity_rate',
             'gross_rental_amount' => 'gross_rental_amount',
-            'tds_payable' => 'tds_payable',
-            'tds'=> 'tds',
+            'tds' => 'tds',
+            'tds' => 'tds',
             'net_rental_amount' => 'net_rental_amount',
             'advance' => 'advance',
             'payment_period' => 'payment_period',
-            'remarks' =>'remarks',
+            'remarks' => 'remarks',
+            'tds_payable' => 0,
+            'status' => 1,
+            'locked' => 0,
         ];
+    }
+
+    private function prepareAgreementData()
+    {
+        $data = [];
+        foreach ($this->dataField() as $dbField => $propertyName) {
+            if (property_exists($this, $propertyName) && isset($this->{$propertyName})) {
+                $data[$dbField] = $this->{$propertyName};
+            } else {
+                $data[$dbField] = null;
+            }
+        }
+        $data['tds_payable'] = 0;
+        $data['status'] = 1;
+        $data['locked'] = 0;
+        return $data;
     }
     public function save()
     {
+        $this->validate();
         DB::beginTransaction();
         try {
-            $data=[];
-            foreach ($this->dataField() as $dbField => $propertyName) {
-                if (property_exists($this, $propertyName) && isset($this->{$propertyName})) {
-                    $data[$dbField] = $this->{$propertyName};
-                } else {
-                    $data[$dbField] = null; 
-                }
-            }
-            $message = $this->repository->updateAgreement($data ,$this->agreementDocument);
-          
+            $data = $this->prepareAgreementData();
+
+            $message = $this->repository->updateAgreement($data, $this->agreementDocument);
+
             $this->saveIncrementDetails($this->agreement->id);
-        
-            $this->repository->updateIncrementAmounts($this->agreement->id, 
-                                                    $this->agreement_date,
-                                                    $this->agreement_end_date, 
-                                                    $this->gross_rental_amount, 
-                                                    $this->tds_payable,
-                                                    $this->advance);
-        
+
+            $data =  $this->repository->updateIncrementAmounts(
+                $this->agreement->id,
+                $this->agreement_date,
+                $this->agreement_end_date,
+                $this->gross_rental_amount,
+                $this->tds,
+                $this->advance,
+                $this->payment_period
+            );
+            if ($data) {
+                $rental_agreement = RentalAgreement::find($this->agreement->id);
+                $rental_agreement->locked = 1;
+                $rental_agreement->update();
+            }
             $this->editMode = false;
             DB::commit();
             $this->notify($message)->send();
@@ -232,6 +267,7 @@ class UpdateAgreement extends Component
 
     private function saveIncrementDetails($rentalAgreementId)
     {
+
         $existingDetails = RentalIncrementDetail::where('rental_agreement_id', $rentalAgreementId)->first();
 
         RentalIncrementDetail::where('rental_agreement_id', $rentalAgreementId)->delete();
@@ -241,16 +277,16 @@ class UpdateAgreement extends Component
             $incrementAmount = isset($form['increment_amount']) ? $form['increment_amount'] : null;
             $incrementAfter = isset($form['increment_after']) ? $form['increment_after'] : null;
             $nextIncrementDate = isset($form['next_increment_date']) ? $form['next_increment_date'] : null;
-            
+
             $existingNextIncrement = $existingDetails ? $existingDetails->next_increment : null;
             $existingIncrementAfter = $existingDetails ? $existingDetails->increment_after : null;
-            
+
             RentalIncrementDetail::create([
                 'rental_agreement_id' => $rentalAgreementId,
                 'increment_percent' => $incrementType === 'percent' ? $incrementPercent : null,
                 'increment_amount' => $incrementType === 'amount' ? $incrementAmount : null,
-                'increment_after' => $incrementAfter ? ($incrementAfter ? : $existingIncrementAfter) :null,
-                'next_increment' => $nextIncrementDate ? ($nextIncrementDate ? :$existingNextIncrement) :null,
+                'increment_after' => $incrementAfter ? ($incrementAfter ?: $existingIncrementAfter) : null,
+                'next_increment' => $nextIncrementDate ? ($nextIncrementDate ?: $existingNextIncrement) : null,
             ]);
         }
     }
@@ -261,7 +297,7 @@ class UpdateAgreement extends Component
             $this->updateAgreementEndDate();
         }
 
-        if (in_array($propertyName, ['tds_payable', 'gross_rental_amount'])) {
+        if (in_array($propertyName, ['tds', 'gross_rental_amount'])) {
             $this->updateNetRentalAmount();
         }
 
@@ -270,6 +306,12 @@ class UpdateAgreement extends Component
             if (count($segments) > 1) {
                 $index = $segments[1];
                 if (array_key_exists($index, $this->incrementForms)) {
+                    $this->validateOnly($propertyName, [
+                        "incrementForms.{$index}.incrementType" => 'required|string',
+                        "incrementForms.{$index}.increment_percent" => 'required_if:incrementForms.' . $index . '.incrementType,percent|numeric|min:0|max:100',
+                        "incrementForms.{$index}.increment_amount" => 'required_if:incrementForms.' . $index . '.incrementType,amount|numeric|min:0',
+                        "incrementForms.{$index}.increment_after" => 'required|numeric|min:1',
+                    ]);
                     $this->updateNextIncrementDate($index);
                 }
             }
@@ -290,10 +332,9 @@ class UpdateAgreement extends Component
 
     private function updateNetRentalAmount()
     {
-        $tdsAmount = ($this->gross_rental_amount * $this->tds_payable) / 100;
+        $tdsAmount = ($this->gross_rental_amount * $this->tds) / 100;
         $this->net_rental_amount = $this->gross_rental_amount - $tdsAmount;
-        $this->tds = $tdsAmount;
-
+        $this->tds_amount = $tdsAmount;
     }
 
     private function updateNextIncrementDate($index)
@@ -307,8 +348,8 @@ class UpdateAgreement extends Component
             $englishDate = LaravelNepaliDate::from($this->agreement_date)->toEnglishDate();
             $agreementEndDateEnglish = LaravelNepaliDate::from($this->agreement_end_date)->toEnglishDate();
             $agreementEndDate = Carbon::parse($agreementEndDateEnglish);
-            $nextIncrementDate=  Carbon::parse($englishDate)->addYears($form['increment_after']);
-            if ($nextIncrementDate < $agreementEndDate){
+            $nextIncrementDate =  Carbon::parse($englishDate)->addYears($form['increment_after']);
+            if ($nextIncrementDate < $agreementEndDate) {
                 $form['next_increment_date'] = LaravelNepaliDate::from($nextIncrementDate)->toNepaliDate();
             } else {
                 unset($form['next_increment_date']);
@@ -334,6 +375,37 @@ class UpdateAgreement extends Component
     {
         unset($this->incrementForms[$index]);
         $this->incrementForms = array_values($this->incrementForms);
+    }
+
+    public function validationAttributes()
+    {
+        return [
+            'district' => 'District',
+            'municipality' => 'Municipality',
+            'place_name' => 'Place Name',
+            'ward_no' => 'Ward Number',
+            'floors_num' => 'Floors Number',
+            'agreement_floor' => 'Agreement Floor',
+            'area_floor' => 'Area Floor',
+            'kitta_no' => 'Kitta Number',
+            'witnesses' => 'Witnesses',
+            'agreement_date' => 'Agreement Date',
+            'agreement_end_date' => 'Agreement End Date',
+            'agreement_period_year' => 'Agreement Period Year',
+            'agreement_period_month' => 'Agreement Period Month',
+            'security_deposit' => 'Security Deposit',
+            'electricity_rate' => 'Electricity Rate',
+            'gross_rental_amount' => 'Gross Rental Amount',
+            'tds' => 'TDS',
+            'advance' => 'Advance',
+            'payment_period' => 'Payment Period',
+            'remarks' => 'Remarks',
+            'agreementDocument' => 'Agreement Document',
+            'incrementForms.*.incrementType' => 'Increment Type',
+            'incrementForms.*.increment_percent' => 'Increment Percent',
+            'incrementForms.*.increment_amount' => 'Increment Amount',
+            'incrementForms.*.increment_after' => 'Increment After',
+        ];
     }
 
     public function render()

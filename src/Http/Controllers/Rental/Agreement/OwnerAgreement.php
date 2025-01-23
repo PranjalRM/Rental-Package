@@ -1,24 +1,24 @@
 <?php
 
-namespace CodeBright\Rental\Http\Controllers\Rental\Agreement;
+namespace Codebright\Rental\Http\Controllers\Rental\Agreement;
 
 use Livewire\Component;
-use CodeBright\Rental\Models\RentalOwners;
-use CodeBright\Rental\Models\RentalAgreement;
+use Codebright\Rental\Models\RentalOwners;
+use Codebright\Rental\Models\RentalAgreement;
 use App\Traits\WithDataTable;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Validate;
 use Illuminate\Http\UploadedFile;
-use CodeBright\Rental\Models\RentalDocument;
+use Codebright\Rental\Models\RentalDocument;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
-use CodeBright\Rental\Exports\AgreementReportExport;
-use CodeBright\Rental\Models\IncrementAmount;
+use Codebright\Rental\Exports\AgreementReportExport;
+use Codebright\Rental\Models\IncrementAmount;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Employee\Employee;
-use CodeBright\Rental\Models\RentalReject;
-use CodeBright\Rental\Http\Repositories\RentalAgreementRepository;
+use Codebright\Rental\Models\RentalReject;
+use Codebright\Rental\Http\Repositories\RentalAgreementRepository;
 use Livewire\Attributes\Title;
 
 #[Title('Rental Agreement')]
@@ -162,8 +162,9 @@ class OwnerAgreement extends Component
                                                   $agreement->agreement_date,
                                                   $agreement->terminated_date, 
                                                   $agreement->gross_rental_amount, 
-                                                  $agreement->tds_payable,
-                                                  $agreement->advance);
+                                                  $agreement->tds,
+                                                  $agreement->advance,
+                                                  $this->payment_period,);
         $agreement->save();
 
         $this->dispatch('hide-model');

@@ -1,24 +1,24 @@
 <?php
 
-namespace CodeBright\Rental\Http\Controllers\Rental\Agreement;
+namespace Codebright\Rental\Http\Controllers\Rental\Agreement;
 
 use Anuzpandey\LaravelNepaliDate\LaravelNepaliDate;
 use App\Models\Rental\IncrementAmount;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\WithFileUploads;
 use App\Traits\WithNotify;
-use CodeBright\Rental\Models\RentalAgreement;
-use CodeBright\Rental\Models\RentalOwners;
+use Codebright\Rental\Models\RentalAgreement;
+use Codebright\Rental\Models\RentalOwners;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\UploadedFile;
-use CodeBright\Rental\Models\RentalDocument;
-use CodeBright\Rental\Models\RentalIncrementDetail;
+use Codebright\Rental\Models\RentalDocument;
+use Codebright\Rental\Models\RentalIncrementDetail;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Employee\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
-use CodeBright\Rental\Http\Repositories\RentalAgreementRepository;
+use Codebright\Rental\Http\Repositories\RentalAgreementRepository;
 use Livewire\Attributes\Title;
 
 #[Title('Add Agreement')]
@@ -31,7 +31,8 @@ class AddOwnerAgreement extends Component
     public $copyOwnerId;
     public $copyOwnerData;
     public $ownerId;
-    public $currentMode="add";
+    public $status, $tds_payable, $locked;
+    public $currentMode = "add";
 
     #[validate('required|nullable')]
     public $incrementForms = [];
@@ -60,7 +61,7 @@ class AddOwnerAgreement extends Component
     #[validate('required|integer')]
     public $kitta_no = '';
 
-    #[validate('required')]
+    #[validate('required|string')]
     public $witnesses = '';
 
     #[validate('required')]
@@ -74,23 +75,23 @@ class AddOwnerAgreement extends Component
     #[validate('required|numeric|between:1,12|nullable')]
     public $agreement_period_month = '';
 
-    #[validate('required')]
+    #[validate('required|integer|min:0')]
     public $security_deposit = '';
 
-    #[validate('required')]
+    #[validate('required|integer|min:0')]
     public $electricity_rate = '';
 
-    #[validate('required')]
+    #[validate('required|integer|min:0')]
     public $gross_rental_amount = '';
-    
-    #[validate('required')]
-    public $tds_payable = '10';
 
-    public $tds ='';
+    #[validate('required|integer|min:0')]
+    public $tds = '10';
+
+    public $tds_amount = '';
 
     public $net_rental_amount = '';
 
-    #[validate('required')]
+    #[validate('required|integer|min:0')]
     public $advance = '';
 
     #[validate('required')]
@@ -102,7 +103,7 @@ class AddOwnerAgreement extends Component
     public $amendment_child_id;
 
     #[validate('required|mimes:pdf|max:7168')]
-    public $agreementDocument= '';
+    public $agreementDocument = '';
 
     private RentalAgreementRepository $repository;
     protected $model;
@@ -112,9 +113,17 @@ class AddOwnerAgreement extends Component
         $this->model = new RentalAgreement;
         $this->repository = new RentalAgreementRepository;
     }
-
-    public function mount($ownerId,$copyOwnerId=null)
-    {   
+    public function rules()
+    {
+        return [
+            'incrementForms.*.incrementType' => 'string',
+            'incrementForms.*.increment_percent' => 'required_if:incrementForms.*.incrementType,percent|numeric|min:0|max:100',
+            'incrementForms.*.increment_amount' => 'required_if:incrementForms.*.incrementType,amount|numeric|min:0',
+            'incrementForms.*.increment_after' => 'numeric|min:1',
+        ];
+    }
+    public function mount($ownerId, $copyOwnerId = null)
+    {
         $this->incrementForms[] = [
             'incrementType' => '',
             'increment_percent' => '',
@@ -122,22 +131,21 @@ class AddOwnerAgreement extends Component
             'increment_after' => '',
             'next_increment_date' => '',
         ];
-        if($ownerId){
+        if ($ownerId) {
             $this->currentMode = 'add';
             $this->ownerId = $ownerId;
             $this->owner = RentalOwners::find($ownerId);
-
-        } elseif($copyOwnerId) {
+        } elseif ($copyOwnerId) {
             $this->currentMode = 'copy';
-            $copyId =RentalAgreement::find($copyOwnerId);
+            $copyId = RentalAgreement::find($copyOwnerId);
             $this->copyOwnerId = $copyId->rental_owner_id;
-            $this->loadCopyAgreementDetails();  
+            $this->loadCopyAgreementDetails();
         }
     }
 
     private function loadCopyAgreementDetails()
     {
-        $agreement = RentalAgreement::with('owner','rentalIncrementDetail', 'file')->where('rental_owner_id',$this->copyOwnerId)->get()->first();
+        $agreement = RentalAgreement::with('owner', 'rentalIncrementDetail', 'file')->where('rental_owner_id', $this->copyOwnerId)->get()->first();
         if ($agreement) {
             $this->owner = $agreement->owner;
             $this->district = $agreement->district;
@@ -152,7 +160,7 @@ class AddOwnerAgreement extends Component
         }
     }
 
-    public function updated($propertyName,$index)
+    public function updated($propertyName, $index)
     {
         if ($propertyName === 'agreement_date' || $propertyName === 'agreement_period_year' || $propertyName === 'agreement_period_month') {
             if (!empty($this->agreement_period_year) || !empty($this->agreement_period_month)) {
@@ -161,26 +169,32 @@ class AddOwnerAgreement extends Component
                 $this->agreement_end_date = null;
             }
         }
-        
+
         if (str_starts_with($propertyName, 'incrementForms')) {
             $segments = explode('.', $propertyName);
             if (count($segments) > 1) {
                 $index = $segments[1];
                 if (array_key_exists($index, $this->incrementForms)) {
+                    $this->validateOnly($propertyName, [
+                        "incrementForms.{$index}.incrementType" => 'required|string',
+                        "incrementForms.{$index}.increment_percent" => 'required_if:incrementForms.' . $index . '.incrementType,percent|numeric|min:0|max:100',
+                        "incrementForms.{$index}.increment_amount" => 'required_if:incrementForms.' . $index . '.incrementType,amount|numeric|min:0',
+                        "incrementForms.{$index}.increment_after" => 'required|numeric|min:1',
+                    ]);
                     $this->updateNextIncrementDate($index);
                 }
             }
         }
-        if (in_array($propertyName, ['tds_payable', 'gross_rental_amount', 'tds'])) {
+        if (in_array($propertyName, ['tds_amount', 'gross_rental_amount', 'tds'])) {
             $this->updateNetRentalAmount();
         }
     }
     public function datafield()
     {
-        return [ 
-            
+        return [
+
             'district' => 'district',
-            'municipality' =>'municipality',
+            'municipality' => 'municipality',
             'place_name' => 'place_name',
             'ward_no' => 'ward_no',
             'floors_num' => 'floors_num',
@@ -192,50 +206,63 @@ class AddOwnerAgreement extends Component
             'agreement_end_date' => 'agreement_end_date',
             'agreement_period_year' => 'agreement_period_year',
             'agreement_period_month' => 'agreement_period_month',
-            'security_deposit' =>'security_deposit',
+            'security_deposit' => 'security_deposit',
             'electricity_rate' => 'electricity_rate',
             'gross_rental_amount' => 'gross_rental_amount',
-            'tds_payable' => 'tds_payable',
-            'tds'=> 'tds',
+            'tds' => 'tds',
             'net_rental_amount' => 'net_rental_amount',
             'advance' => 'advance',
             'payment_period' => 'payment_period',
-            'remarks' =>'remarks',
+            'remarks' => 'remarks',
             'amendment_child_id' => 'amendment_child_id',
         ];
     }
-    
+
+    private function prepareAgreementData()
+    {
+        $data = [];
+        foreach ($this->dataField() as $dbField => $propertyName) {
+            if (property_exists($this, $propertyName) && isset($this->{$propertyName})) {
+                $data[$dbField] = $this->{$propertyName};
+            } else {
+                $data[$dbField] = null;
+            }
+        }
+        $data['rental_owner_id'] = $this->ownerId ?? $this->copyOwnerId;
+        $data ['tds_payable'] = 0;
+        $data['status'] = 1;
+        return $data;
+    }
     public function save()
-    {   
+    {
         DB::beginTransaction();
         $this->validate();
-        try{
-
-            $data=[];
-            foreach ($this->dataField() as $dbField => $propertyName) {
-                if (property_exists($this, $propertyName) && isset($this->{$propertyName})) {
-                    $data[$dbField] = $this->{$propertyName};
-                } else {
-                    $data[$dbField] = null; 
-                }
-            }
-            $data['rental_owner_id'] = $this->ownerId ?? $this->copyOwnerId;
-            $created = $this->repository->saveAgreement($data,$this->agreementDocument);
+        try {
+            $data = $this->prepareAgreementData();
+            $created = $this->repository->saveAgreement($data, $this->agreementDocument);
             $rentalAgreementId = $created->id;
 
             $this->saveIncrementDetails($rentalAgreementId);
-            $this->repository->saveIncrementAmounts($rentalAgreementId, 
-                                                    $this->agreement_date,
-                                                    $this->agreement_end_date, 
-                                                    $this->gross_rental_amount, 
-                                                    $this->tds_payable,
-                                                    $this->advance);
+            $data = $this->repository->saveIncrementAmounts(
+                $rentalAgreementId,
+                $this->agreement_date,
+                $this->agreement_end_date,
+                $this->gross_rental_amount,
+                $this->tds,
+                $this->advance,
+                $this->payment_period,
+            );
+            if($data)
+            {
+                $rental_agreement = RentalAgreement::find($rentalAgreementId);
+                $rental_agreement->locked = 1;
+                $rental_agreement->update();
+            }
+            redirect(route('agreementInfo', ['ownerId' => $this->owner->id]));
 
-            redirect(route('agreementInfo',['ownerId' => $this->owner->id]));
-            
             DB::commit();
             $message = "Rental agreement saved successfully.";
-            $this->notify($message)->send();  
+            $this->notify($message)->send();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Exception occurred: ' . $e->getMessage());
@@ -243,13 +270,14 @@ class AddOwnerAgreement extends Component
         }
     }
 
-    public function clear() 
+    public function clear()
     {
-        $this->reset();    
+        $this->reset();
     }
 
     public function addIncrementForm()
-    {    if (count($this->incrementForms) < 100) {
+    {
+        if (count($this->incrementForms) < 100) {
             $this->incrementForms[] = [
                 'incrementType' => '',
                 'increment_percent' => '',
@@ -270,7 +298,7 @@ class AddOwnerAgreement extends Component
     {
         return view('rental::rental.agreement.add-owner-agreement');
     }
-    
+
     private function updateAgreementEndDate()
     {
         if ($this->agreement_period_year !== null && $this->agreement_period_month !== null) {
@@ -288,11 +316,11 @@ class AddOwnerAgreement extends Component
     private function updateNetRentalAmount()
     {
         $gross_rental_amount = (float) $this->gross_rental_amount;
-        $tds_payable = (float) $this->tds_payable;
+        $tds = (float) $this->tds;
 
-        $tdsAmount = ($gross_rental_amount * $tds_payable) / 100;
+        $tdsAmount = ($gross_rental_amount * $tds) / 100;
         $this->net_rental_amount = $gross_rental_amount - $tdsAmount;
-        $this->tds = $tdsAmount;
+        $this->tds_amount = $tdsAmount;
     }
 
     public function updateNextIncrementDate($index)
@@ -301,32 +329,66 @@ class AddOwnerAgreement extends Component
             return;
         }
         $form = $this->incrementForms[$index];
-
+        if ($this->agreement_date == null || $this->agreement_end_date == null) {
+            return;
+        }
         if (array_key_exists($index, $this->incrementForms)) {
             $englishDate = LaravelNepaliDate::from($this->agreement_date)->toEnglishDate();
             $agreementEndDateEnglish = LaravelNepaliDate::from($this->agreement_end_date)->toEnglishDate();
             $agreementEndDate = Carbon::parse($agreementEndDateEnglish);
-            $nextIncrementDate=  Carbon::parse($englishDate)->addYears($form['increment_after']);
-            if ($nextIncrementDate < $agreementEndDate){
+            $nextIncrementDate =  Carbon::parse($englishDate)->addYears($form['increment_after']);
+            if ($nextIncrementDate < $agreementEndDate) {
                 $form['next_increment_date'] = LaravelNepaliDate::from($nextIncrementDate)->toNepaliDate();
             } else {
                 unset($form['next_increment_date']);
             }
         }
         $this->incrementForms[$index] = $form;
-      
     }
 
     public function saveIncrementDetails($rentalAgreementId)
     {
+        $this->validate();
+
         foreach ($this->incrementForms as $form) {
             RentalIncrementDetail::create([
                 'rental_agreement_id'   => $rentalAgreementId,
                 'increment_percent'     => $form['incrementType'] === 'percent' ? $form['increment_percent'] : null,
                 'increment_amount'      => $form['incrementType'] === 'amount' ? $form['increment_amount'] : null,
                 'increment_after'       => $form['increment_after'] ? $form['increment_after'] : null,
-                'next_increment'        => $form['next_increment_date'] ? $form['next_increment_date'] :null,
-            ]);  
+                'next_increment'        => $form['next_increment_date'] ? $form['next_increment_date'] : null,
+            ]);
         }
     }
-}    
+
+    public function validationAttributes()
+    {
+        return [
+            'district' => 'District',
+            'municipality' => 'Municipality',
+            'place_name' => 'Place Name',
+            'ward_no' => 'Ward Number',
+            'floors_num' => 'Floors Number',
+            'agreement_floor' => 'Agreement Floor',
+            'area_floor' => 'Area Floor',
+            'kitta_no' => 'Kitta Number',
+            'witnesses' => 'Witnesses',
+            'agreement_date' => 'Agreement Date',
+            'agreement_end_date' => 'Agreement End Date',
+            'agreement_period_year' => 'Agreement Period Year',
+            'agreement_period_month' => 'Agreement Period Month',
+            'security_deposit' => 'Security Deposit',
+            'electricity_rate' => 'Electricity Rate',
+            'gross_rental_amount' => 'Gross Rental Amount',
+            'tds_amount' => 'TDS Amount',
+            'advance' => 'Advance',
+            'payment_period' => 'Payment Period',
+            'remarks' => 'Remarks',
+            'agreementDocument' => 'Agreement Document',
+            'incrementForms.*.incrementType' => 'Increment Type',
+            'incrementForms.*.increment_percent' => 'Increment Percent',
+            'incrementForms.*.increment_amount' => 'Increment Amount',
+            'incrementForms.*.increment_after' => 'Increment After',
+        ];
+    }
+}

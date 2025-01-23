@@ -17,13 +17,16 @@ return new class extends Migration
             $table->string('date')->nullable();
             $table->float('rental_amount')->nullable();
             $table->float('payment_amount')->nullable();
-            $table->float('TDS_amount')->nullable();
+            $table->float('tds_amount')->nullable();
             $table->integer('year')->nullable();
             $table->integer('month')->nullable();
             $table->integer('day')->nullable();
-            $table->enum('paid_status',['Due', 'Clear']);
+            $table->enum('paid_status',['Due', 'Clear', 'Partial']);
             $table->string('remarks')->nullable();
             $table->float('advance_due')->nullable();
+            $table->float('previous_due')->nullable();
+            $table->tinyInteger('payment_status')->nullable();
+            $table->tinyInteger('bank_status')->default('0');    
             $table->softDeletes()->nullable();
             $table->timestamps();
         });
